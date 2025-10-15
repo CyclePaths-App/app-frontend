@@ -17,7 +17,14 @@ internal val Res.drawable.compose_multiplatform: DrawableResource by lazy {
       ))
     }
 
+internal val Res.drawable.loginBKG: DrawableResource by lazy {
+      DrawableResource("drawable:loginBKG", setOf(
+        ResourceItem(setOf(), "${MD}drawable/loginBKG.png", -1, -1),
+      ))
+    }
+
 @InternalResourceApi
 internal fun _collectCommonMainDrawable0Resources(map: MutableMap<String, DrawableResource>) {
   map.put("compose_multiplatform", Res.drawable.compose_multiplatform)
+  map.put("loginBKG", Res.drawable.loginBKG)
 }

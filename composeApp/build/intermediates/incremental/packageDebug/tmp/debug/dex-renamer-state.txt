@@ -1,9 +1,9 @@
-#Tue Sep 23 19:55:01 EDT 2025
-base.0=/home/danny/GitShit/CyclePaths/app-frontend/composeApp/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
-base.1=/home/danny/GitShit/CyclePaths/app-frontend/composeApp/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
-base.2=/home/danny/GitShit/CyclePaths/app-frontend/composeApp/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
-base.3=/home/danny/GitShit/CyclePaths/app-frontend/composeApp/build/intermediates/dex/debug/mergeProjectDexDebug/2/classes.dex
-base.4=/home/danny/GitShit/CyclePaths/app-frontend/composeApp/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
+#Wed Oct 15 12:28:41 EDT 2025
+base.0=/Users/somwa/StudioProjects/app-frontend/composeApp/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+base.1=/Users/somwa/StudioProjects/app-frontend/composeApp/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.2=/Users/somwa/StudioProjects/app-frontend/composeApp/build/intermediates/dex/debug/mergeProjectDexDebug/14/classes.dex
+base.3=/Users/somwa/StudioProjects/app-frontend/composeApp/build/intermediates/dex/debug/mergeProjectDexDebug/2/classes.dex
+base.4=/Users/somwa/StudioProjects/app-frontend/composeApp/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.2=14/classes.dex
