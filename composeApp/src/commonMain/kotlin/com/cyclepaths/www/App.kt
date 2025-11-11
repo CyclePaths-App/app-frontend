@@ -58,6 +58,10 @@ fun App(modifier: Modifier = Modifier) {
             composable("signup") {
                 Signup(navController)
             }
+
+            composable("tripSelection") {
+                TripSelection(navController)
+            }
         })
     }
 }
@@ -158,7 +162,7 @@ fun Login(navController: NavController) {
                 )
 
                 Button(
-                    onClick = { /* Coming back to this */ },
+                    onClick = { navController.navigate("tripSelection") },
                     shape = RoundedCornerShape(5.dp),
                     modifier = Modifier.padding(15.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -189,7 +193,7 @@ fun Login(navController: NavController) {
                             color = Color(0xFFFF1128F8)
                         ),
                         modifier = Modifier
-                            .clickable{navController.navigate("signup")}
+                            .clickable { navController.navigate("signup") }
                     )
                 }
             }
