@@ -200,19 +200,15 @@ fun Login(navController: NavController) {
                 Button(
                     onClick = {
                         scope.launch {
-//                            try {
-//                                val newUser = User(
-//                                    id = 0,
-//                                    username = user,
-//                                    password = password
-//                                )
-//                                val createdUser = api.createUser(newUser)
-//                                println("Created user: ${createdUser.username}")
-//                            } catch (e: Exception) {
-//                                println("Error creating user: ${e.message}")
-//                            }
+                            val loggedInUser = api.sendLogin(user, password)
+                            if (loggedInUser != null) {
+                                println("Logged in as: ${loggedInUser.username}")
+                                SessionManager.currentUserId = loggedInUser.id
+                                navController.navigate("welcome")
+                            } else {
+                                println("Invalid credentials")
+                            }
                         }
-
                         navController.navigate("welcome")
                     },
                     border = BorderStroke(1.dp, Color.Black),

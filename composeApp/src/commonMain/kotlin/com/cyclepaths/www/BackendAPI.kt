@@ -4,6 +4,7 @@ import cyclepaths.composeapp.generated.resources.Res
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -51,10 +52,20 @@ class BackendAPI(baseUrl: String) {
         }.body()
     }
 
-    suspend fun sendLogin(username: String, password: String): User {
-        return client.post("$baseUrl/login") {
-            contentType(ContentType.Application.Json)
-            //setBody(user)
-    }.body()
-}
+    suspend fun sendLogin(username: String, password: String): User? {
+        return try {
+            val response = client.post("$baseUrl/login") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("username" to username, "password" to password))
+            }
+            response.body<User>()
+        } catch (e: Exception) {
+            println("Login failed: ${e.message}")
+            null
+        }
+    }
+
+    suspend fun deleteUser(user: User) {
+        client.delete("$baseUrl/users/${user.id}")
+    }
 }

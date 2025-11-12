@@ -73,22 +73,46 @@ fun Signup(navController: NavController) {
         val modSpace = Modifier.padding(bottom = 20.dp)
         val api = remember { BackendAPI("http://localhost:8000") }
         val scope = rememberCoroutineScope()
-        var user by remember { mutableStateOf("") }
+        var username by remember { mutableStateOf("") }
+        var firstName by remember { mutableStateOf("") }
+        var lastName by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         Column(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                "Enter full name",
+                "Enter first name",
                 color = Color.Black,
                 fontFamily = josefinSansFamily,
             )
 
             OutlinedTextField(
-                value = user,
-                onValueChange = { user = it },
-                placeholder = { Text("John Doe") },
+                value = firstName,
+                onValueChange = { firstName = it },
+                placeholder = { Text("First name") },
+                shape = RoundedCornerShape(5.dp),
+                modifier = modSpace,
+
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.Black,
+
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                )
+            )
+
+            Text(
+                "Enter last name",
+                color = Color.Black,
+                fontFamily = josefinSansFamily,
+            )
+
+            OutlinedTextField(
+                value = lastName,
+                onValueChange = { firstName = it },
+                placeholder = { Text("Last name") },
                 shape = RoundedCornerShape(5.dp),
                 modifier = modSpace,
 
@@ -111,6 +135,28 @@ fun Signup(navController: NavController) {
                 value = email,
                 onValueChange = { email = it },
                 placeholder = { Text("Email") },
+                shape = RoundedCornerShape(5.dp),
+                modifier = modSpace,
+
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Black,
+                    unfocusedBorderColor = Color.Black,
+
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                )
+            )
+
+            Text(
+                "Enter username",
+                color = Color.Black,
+                fontFamily = josefinSansFamily
+            )
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = { email = it },
+                placeholder = { Text("Username") },
                 shape = RoundedCornerShape(5.dp),
                 modifier = modSpace,
 
@@ -175,7 +221,7 @@ fun Signup(navController: NavController) {
                     try {
                         val newUser = User(
                             id = 0,
-                            username = user,
+                            username = username,
                             email = email,
                             password = password
                         )

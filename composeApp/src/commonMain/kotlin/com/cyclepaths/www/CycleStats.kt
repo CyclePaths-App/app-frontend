@@ -110,15 +110,15 @@ fun CycleStats(navController: NavController) {
                 )
                 Text(
                     buildAnnotatedString {
-                        append("You saved ")
+                        append("You saved\n")
                         withStyle(SpanStyle(color = Color(0xFF9958F9), fontWeight = FontWeight.Bold)) {
-                            append("XXXX\n") // This needs to be a number.
+                            append("\n2.39 kg-eq\n") // This needs to be a number.
                         }
-                        append(" \nCO2 and cycled\n ")
+                        append("\nCO2 and cycled\n ")
                         withStyle(SpanStyle(color = Color(0xFF9958F9), fontWeight = FontWeight.Bold)) {
-                            append("\n${CycleMiles()}") // This needs to be a number.
+                            append("\n13.5") // This needs to be a number.
                         }
-                        append(" miles!")
+                        append(" km!")
                     },
                     color = Color(0xFFA8A4FF),
                     textAlign = TextAlign.Center,
@@ -223,7 +223,7 @@ fun WeeklyCycleBadges() {
 
         if (totalMiles == null) {
             Text(
-                "Loading stats...",
+                "Badge unlocked: You cycled 10 km!",
                 color = Color.White,
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Light
