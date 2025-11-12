@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ import cyclepaths.composeapp.generated.resources.Res
 import cyclepaths.composeapp.generated.resources.josefin_sans_bold
 import cyclepaths.composeapp.generated.resources.josefin_sans_italic
 import cyclepaths.composeapp.generated.resources.josefin_sans_regular
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -69,13 +71,16 @@ fun Signup(navController: NavController) {
         )
 
         val modSpace = Modifier.padding(bottom = 20.dp)
+        val api = remember { BackendAPI("http://localhost:8000") }
+        val scope = rememberCoroutineScope()
         var user by remember { mutableStateOf("") }
-
+        var email by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
         Column(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                "Enter first name",
+                "Enter full name",
                 color = Color.Black,
                 fontFamily = josefinSansFamily,
             )
@@ -83,28 +88,7 @@ fun Signup(navController: NavController) {
             OutlinedTextField(
                 value = user,
                 onValueChange = { user = it },
-                placeholder = { Text("First name") },
-                shape = RoundedCornerShape(5.dp),
-                modifier = modSpace,
-
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Black,
-
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                )
-            )
-
-            Text(
-                "Enter last name",
-                color = Color.Black,
-                fontFamily = josefinSansFamily
-            )
-            OutlinedTextField(
-                value = user,
-                onValueChange = { user = it },
-                placeholder = { Text("Last name") },
+                placeholder = { Text("John Doe") },
                 shape = RoundedCornerShape(5.dp),
                 modifier = modSpace,
 
@@ -123,7 +107,6 @@ fun Signup(navController: NavController) {
                 fontFamily = josefinSansFamily
             )
 
-            var email by remember { mutableStateOf("") }
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -146,7 +129,6 @@ fun Signup(navController: NavController) {
                 fontFamily = josefinSansFamily
             )
 
-            var password by remember { mutableStateOf("") }
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -188,7 +170,24 @@ fun Signup(navController: NavController) {
         }
 
         Button(
-            onClick = { /* Coming back to this */ },
+            onClick = {
+                scope.launch {
+                    try {
+                        val newUser = User(
+                            id = 0,
+                            username = user,
+                            email = email,
+                            password = password
+                        )
+                        val createdUser = api.createUser(newUser)
+                        println("Created user: ${createdUser.username}")
+                    } catch (e: Exception) {
+                        println("Error creating user: ${e.message}")
+                    }
+
+                    navController.navigate("login")
+                }
+            },
             shape = RoundedCornerShape(5.dp),
             modifier = Modifier.padding(15.dp),
             colors = ButtonDefaults.buttonColors(
