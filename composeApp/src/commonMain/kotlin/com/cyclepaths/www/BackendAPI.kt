@@ -1,6 +1,5 @@
 package com.cyclepaths.www
 
-import cyclepaths.composeapp.generated.resources.Res
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -8,11 +7,14 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+
 
 class BackendAPI(baseUrl: String) {
 
@@ -30,6 +32,47 @@ class BackendAPI(baseUrl: String) {
 
     suspend fun getTrips(userId: Int): List<Trip> {
         return client.get("$baseUrl/users/$userId/trips").body()
+    }
+
+    @Serializable
+    private data class CreateTripReq(
+        val user_id: Int,
+        val trip: List<Location>,
+        val trip_type: TripType
+    )
+
+    @Serializable
+    data class Location(val latitude: Double, val longitude: Double, val time: String)
+
+
+    @Serializable
+    private data class CreateTripRes(val id: Int)
+
+    suspend fun createTrip(
+        userId: Int,
+        trip: List<Location>,
+        tripType: TripType
+    ): Result<Int> {
+        val res = try {
+            client.post("$baseUrl/trips/") {
+                contentType(ContentType.Application.Json)
+                setBody(CreateTripReq(userId, trip, tripType))
+            }
+        } catch (e: UnresolvedAddressException) {
+            return Result.failure(Exception("Could not connect to WiFi."));
+        } catch (e: SerializationException) {
+            return Result.failure(Exception("Serialization Error: " + e.message));
+        } catch (e: Exception) {
+            return Result.failure(Exception("Unknown Clientside Error: " + e.message))
+        }
+
+        return when (res.status.value) {
+            in 200..299 -> Result.success(res.body<CreateTripRes>().id)
+            400 -> Result.failure(Exception("Bad Request."))
+            409 -> Result.failure(Exception("Unauthorized."))
+            500 -> Result.failure(Exception("Internal Server Error."))
+            else -> Result.failure(Exception("Unknown Error."))
+        }
     }
 
     suspend fun getPoints(tripId: Int): List<Point> {

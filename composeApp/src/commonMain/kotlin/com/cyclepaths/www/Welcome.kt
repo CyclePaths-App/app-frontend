@@ -47,7 +47,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun Welcome(navController: NavController) {
     MaterialTheme {
-        Box  {
+        Box {
             Image(
                 painter = painterResource(Res.drawable.WelcomeBackground),
                 contentDescription = "welcome page background",
@@ -83,7 +83,7 @@ fun Welcome(navController: NavController) {
                     Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
                 )
 
-                Box () {
+                Box() {
                     val textStyle = TextStyle(
                         fontFamily = josefinSansFamily,
                         fontStyle = FontStyle.Italic,
@@ -113,7 +113,7 @@ fun Welcome(navController: NavController) {
                 Spacer(modifier = Modifier.height(50.dp))
 
                 Button(
-                    onClick = { navController.navigate("cyclestats") },
+                    onClick = { navController.navigate("bikeTrip") },
                     border = BorderStroke(1.dp, Color.White),
                     shape = RoundedCornerShape(5.dp),
                     contentPadding = PaddingValues(0.dp),
@@ -140,7 +140,7 @@ fun Welcome(navController: NavController) {
                 }
 
                 Button(
-                    onClick = { navController.navigate("walkstats") },
+                    onClick = { navController.navigate("walkTrip") },
                     border = BorderStroke(1.dp, Color.White),
                     shape = RoundedCornerShape(5.dp),
                     contentPadding = PaddingValues(0.dp),
@@ -148,7 +148,7 @@ fun Welcome(navController: NavController) {
                         .padding(15.dp)
                         .size(width = 500.dp, height = 70.dp)
                 ) {
-                    Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Image(
                             painter = painterResource(Res.drawable.walkoption),
                             contentDescription = null,

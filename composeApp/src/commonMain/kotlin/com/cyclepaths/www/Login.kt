@@ -69,6 +69,8 @@ fun App() {
             composable("walkstats") { WalkStats(navController) }
             composable("cyclestats") { CycleStats(navController) }
             composable("map") { Map(navController) }
+            composable("bikeTrip") { RecordingTrip(navController, TripType.bike) }
+            composable("walkTrip") { RecordingTrip(navController, TripType.walk) }
         })
     }
 }
@@ -171,10 +173,10 @@ fun Login(navController: NavController) {
                         unfocusedContainerColor = Color.White,
                     ),
                     visualTransformation =
-                    if (passwordVisible)
-                        VisualTransformation.None
-                    else
-                        PasswordVisualTransformation(),
+                        if (passwordVisible)
+                            VisualTransformation.None
+                        else
+                            PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     trailingIcon = {
                         val icon =
@@ -242,7 +244,7 @@ fun Login(navController: NavController) {
                             color = Color(0xFFFF1128F8)
                         ),
                         modifier = Modifier
-                            .clickable{navController.navigate("signup")}
+                            .clickable { navController.navigate("signup") }
                     )
                 }
             }
