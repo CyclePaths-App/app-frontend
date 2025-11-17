@@ -59,7 +59,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                     Font(Res.font.josefin_sans_bold, FontWeight.Bold),
                     Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
                 )
-                val api = remember { BackendAPI("http://localhost:8000") }
+                val api = remember { BackendAPI(BACKEND_URL) }
                 var errorMessge by remember { mutableStateOf<String?>("Test") }
                 val scope = rememberCoroutineScope()
 

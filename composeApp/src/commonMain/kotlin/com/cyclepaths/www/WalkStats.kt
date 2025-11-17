@@ -73,7 +73,7 @@ fun WalkStats(navController: NavController) {
                 contentAlignment = Alignment.TopStart
             ) {
                 TextButton(
-                    onClick = {navController.popBackStack()}
+                    onClick = { navController.popBackStack() }
                 ) {
                     Text(
                         "< Back",
@@ -111,11 +111,21 @@ fun WalkStats(navController: NavController) {
                 Text(
                     buildAnnotatedString {
                         append("You saved ")
-                        withStyle(SpanStyle(color = Color(0xFF9958F9), fontWeight = FontWeight.Bold)) {
+                        withStyle(
+                            SpanStyle(
+                                color = Color(0xFF9958F9),
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
                             append("XXXX\n") // This needs to be a number.
                         }
                         append(" \nCO2 and walked\n ")
-                        withStyle(SpanStyle(color = Color(0xFF9958F9), fontWeight = FontWeight.Bold)) {
+                        withStyle(
+                            SpanStyle(
+                                color = Color(0xFF9958F9),
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
                             append("\n${CalculateMiles()}") // This needs to be a number.
                         }
                         append(" miles!")
@@ -166,7 +176,7 @@ fun WalkStats(navController: NavController) {
                         .padding(15.dp)
                         .size(width = 500.dp, height = 70.dp)
                 ) {
-                    Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Image(
                             painter = painterResource(Res.drawable.viewheatmapoption),
                             contentDescription = null,
@@ -251,10 +261,10 @@ fun WeeklyBadges() {
  * Fetch the total miles walked by the user.
  */
 @Composable
-fun CalculateMiles() : Double? {
+fun CalculateMiles(): Double? {
     val scope = rememberCoroutineScope()
     var totalMiles by remember { mutableStateOf<Double?>(0.0) }
-    val api = remember { BackendAPI("http://localhost:8000") }
+    val api = remember { BackendAPI(BACKEND_URL) }
     val userId = SessionManager.currentUserId
 
     LaunchedEffect(userId) {

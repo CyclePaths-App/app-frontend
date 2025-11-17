@@ -71,7 +71,7 @@ fun Signup(navController: NavController) {
         )
 
         val modSpace = Modifier.padding(bottom = 20.dp)
-        val api = remember { BackendAPI("http://localhost:8000") }
+        val api = remember { BackendAPI(BACKEND_URL) }
         val scope = rememberCoroutineScope()
         var username by remember { mutableStateOf("") }
         var firstName by remember { mutableStateOf("") }
@@ -264,7 +264,7 @@ fun Signup(navController: NavController) {
                     color = Color(0xFFFF1128F8)
                 ),
                 modifier = Modifier
-                    .clickable{navController.navigate("login")}
+                    .clickable { navController.navigate("login") }
             )
         }
     }

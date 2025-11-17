@@ -107,7 +107,7 @@ fun Login(navController: NavController) {
                     Font(Res.font.josefin_sans_bold, FontWeight.Bold),
                     Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
                 )
-                val api = remember { BackendAPI("http://localhost:8000") }
+                val api = remember { BackendAPI(BACKEND_URL) }
                 val scope = rememberCoroutineScope()
                 var user by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }

@@ -73,7 +73,7 @@ fun CycleStats(navController: NavController) {
                 contentAlignment = Alignment.TopStart
             ) {
                 TextButton(
-                    onClick = {navController.popBackStack()}
+                    onClick = { navController.popBackStack() }
                 ) {
                     Text(
                         "< Back",
@@ -111,11 +111,21 @@ fun CycleStats(navController: NavController) {
                 Text(
                     buildAnnotatedString {
                         append("You saved\n")
-                        withStyle(SpanStyle(color = Color(0xFF9958F9), fontWeight = FontWeight.Bold)) {
+                        withStyle(
+                            SpanStyle(
+                                color = Color(0xFF9958F9),
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
                             append("\n2.39 kg-eq\n") // This needs to be a number.
                         }
                         append("\nCO2 and cycled\n ")
-                        withStyle(SpanStyle(color = Color(0xFF9958F9), fontWeight = FontWeight.Bold)) {
+                        withStyle(
+                            SpanStyle(
+                                color = Color(0xFF9958F9),
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
                             append("\n13.5") // This needs to be a number.
                         }
                         append(" km!")
@@ -166,7 +176,7 @@ fun CycleStats(navController: NavController) {
                         .padding(15.dp)
                         .size(width = 500.dp, height = 70.dp)
                 ) {
-                    Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Image(
                             painter = painterResource(Res.drawable.viewheatmapoption),
                             contentDescription = null,
@@ -194,7 +204,7 @@ fun CycleStats(navController: NavController) {
 fun WeeklyCycleBadges() {
     val scope = rememberCoroutineScope()
     var totalMiles by remember { mutableStateOf<Double?>(0.0) }
-    val api = remember { BackendAPI("http://localhost:8000") }
+    val api = remember { BackendAPI(BACKEND_URL) }
     val userId = SessionManager.currentUserId
 
     LaunchedEffect(userId) {
@@ -265,10 +275,10 @@ fun WeeklyCycleBadges() {
  * Fetch the total miles walked by the user.
  */
 @Composable
-fun CycleMiles() : Double? {
+fun CycleMiles(): Double? {
     val scope = rememberCoroutineScope()
     var totalMiles by remember { mutableStateOf<Double?>(0.0) }
-    val api = remember { BackendAPI("http://localhost:8000") }
+    val api = remember { BackendAPI(BACKEND_URL) }
     val userId = SessionManager.currentUserId
 
     LaunchedEffect(userId) {
