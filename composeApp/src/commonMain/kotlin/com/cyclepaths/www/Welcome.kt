@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
@@ -97,7 +99,7 @@ fun Welcome(navController: NavController) {
                             color = Color.Black,
                             drawStyle = Stroke(5F)
                         ),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Left
                     )
 
                     // Layer 2 (Top): The Solid Fill
@@ -106,7 +108,7 @@ fun Welcome(navController: NavController) {
                         style = textStyle.copy(
                             color = Color.White
                         ),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Left
                     )
                 }
 
@@ -126,7 +128,7 @@ fun Welcome(navController: NavController) {
                             painter = painterResource(Res.drawable.cycleoption),
                             contentDescription = null,
                             modifier = Modifier.matchParentSize(),
-                            contentScale = ContentScale.FillBounds
+                            contentScale = ContentScale.Crop
                         )
 
                         Text(
@@ -153,7 +155,7 @@ fun Welcome(navController: NavController) {
                             painter = painterResource(Res.drawable.walkoption),
                             contentDescription = null,
                             modifier = Modifier.matchParentSize(),
-                            contentScale = ContentScale.FillBounds,
+                            contentScale = ContentScale.Crop,
                         )
 
                         Text(

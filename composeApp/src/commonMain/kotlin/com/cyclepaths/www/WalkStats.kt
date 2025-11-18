@@ -73,7 +73,7 @@ fun WalkStats(navController: NavController) {
                 contentAlignment = Alignment.TopStart
             ) {
                 TextButton(
-                    onClick = { navController.popBackStack() }
+                    onClick = { navController.navigate("welcome") }
                 ) {
                     Text(
                         "< Back",

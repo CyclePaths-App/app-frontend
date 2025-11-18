@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,16 +30,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import cyclepaths.composeapp.generated.resources.Res
 import cyclepaths.composeapp.generated.resources.josefin_sans_bold
 import cyclepaths.composeapp.generated.resources.josefin_sans_italic
 import cyclepaths.composeapp.generated.resources.josefin_sans_regular
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@Preview
+@Composable
+fun RecordingTripDemo() {
+    RecordingTrip(rememberNavController(), TripType.bike)
+}
 
 @Composable
 fun RecordingTrip(navController: NavController, tripType: TripType) {
@@ -51,7 +61,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
         {
             Column(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 val josefinSansFamily = FontFamily(
@@ -60,7 +70,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                     Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
                 )
                 val api = remember { BackendAPI(BACKEND_URL) }
-                var errorMessge by remember { mutableStateOf<String?>("Test") }
+                var errorMessge by remember { mutableStateOf<String?>(null) }
                 val scope = rememberCoroutineScope()
 
                 Box {
@@ -70,7 +80,10 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                         fontSize = 40.sp,
                     )
 
-                    val message = "Recording Bike Trip"
+                    val message = when (tripType) {
+                        TripType.bike -> "Recording cycling trip."
+                        TripType.walk -> "Recording walking trip."
+                    }
 
                     // Layer 1 (Bottom): The Stroke/Outline
                     Text(
@@ -134,16 +147,32 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                         }
                     },
                     border = BorderStroke(1.dp, Color.Black),
-                    shape = RoundedCornerShape(5.dp),
-                    modifier = Modifier.padding(15.dp),
+                    shape = RoundedCornerShape(100),
+                    modifier = Modifier.padding(15.dp).size(300.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFF3958C8)
                     ),
                 ) {
-                    Text("End Trip", color = Color.White, fontFamily = josefinSansFamily)
+                    Text(
+                        "End Trip",
+                        color = Color.White,
+                        style = TextStyle(
+                            fontFamily = josefinSansFamily,
+                            fontSize = 35.sp,
+                        )
+                    )
                 }
 
-                errorMessge?.let { Text(it, color = Color.Red, fontFamily = josefinSansFamily) }
+                errorMessge?.let {
+                    Text(
+                        it,
+                        color = Color.Red,
+                        style = TextStyle(
+                            fontFamily = josefinSansFamily,
+                            fontSize = 20.sp,
+                        )
+                    )
+                }
             }
         }
     }
