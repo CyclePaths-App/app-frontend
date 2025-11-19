@@ -53,7 +53,7 @@ fun Welcome(navController: NavController) {
             Image(
                 painter = painterResource(Res.drawable.WelcomeBackground),
                 contentDescription = "welcome page background",
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
             )
@@ -61,7 +61,7 @@ fun Welcome(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(35.dp),
+                    .padding(40.dp),
                 contentAlignment = Alignment.TopEnd
             ) {
                 Image(
@@ -74,7 +74,8 @@ fun Welcome(navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 85.dp),
+                    .padding(top = 85.dp)
+                    .padding(horizontal = 30.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -120,7 +121,7 @@ fun Welcome(navController: NavController) {
                     shape = RoundedCornerShape(5.dp),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier
-                        .padding(15.dp)
+                        .padding(vertical = 15.dp)
                         .size(width = 500.dp, height = 70.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

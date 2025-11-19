@@ -35,8 +35,8 @@ import cyclepaths.composeapp.generated.resources.Res
 import cyclepaths.composeapp.generated.resources.josefin_sans_bold
 import cyclepaths.composeapp.generated.resources.josefin_sans_italic
 import cyclepaths.composeapp.generated.resources.josefin_sans_regular
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
+import dev.jordond.compass.geolocation.MobileGeolocator
+import dev.jordond.compass.geolocation.TrackingStatus
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -71,6 +71,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                 )
                 val api = remember { BackendAPI(BACKEND_URL) }
                 var errorMessge by remember { mutableStateOf<String?>(null) }
+                var locationList by remember { mutableStateOf(ArrayList<BackendAPI.Location>()) }
                 val scope = rememberCoroutineScope()
 
                 Box {
@@ -109,31 +110,31 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                     onClick = {
                         var response: Result<Int>
                         scope.launch {
-                            val standardList =
-                                listOf(
-                                    BackendAPI.Location(
-                                        latitude = 42.686261,
-                                        longitude = -73.828025,
-                                        time = LocalDateTime(2025, 9, 20, 18, 5, 0).toInstant(
-                                            TimeZone.UTC
-                                        ).toString()
-                                    ),
-                                    BackendAPI.Location(
-                                        latitude = 42.686945,
-                                        longitude = -73.827349,
-                                        time = LocalDateTime(2025, 9, 20, 18, 5, 15).toInstant(
-                                            TimeZone.UTC
-                                        ).toString()
-                                    ),
-                                    BackendAPI.Location(
-                                        latitude = 42.687378,
-                                        longitude = -73.826919,
-                                        time = LocalDateTime(2025, 9, 20, 18, 5, 30).toInstant(
-                                            TimeZone.UTC
-                                        ).toString()
-                                    )
-                                )
-                            response = api.createTrip(userId = 1, standardList, tripType)
+//                            val standardList =
+//                                listOf(
+//                                    BackendAPI.Location(
+//                                        latitude = 42.686261,
+//                                        longitude = -73.828025,
+//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 0).toInstant(
+//                                            TimeZone.UTC
+//                                        ).toString()
+//                                    ),
+//                                    BackendAPI.Location(
+//                                        latitude = 42.686945,
+//                                        longitude = -73.827349,
+//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 15).toInstant(
+//                                            TimeZone.UTC
+//                                        ).toString()
+//                                    ),
+//                                    BackendAPI.Location(
+//                                        latitude = 42.687378,
+//                                        longitude = -73.826919,
+//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 30).toInstant(
+//                                            TimeZone.UTC
+//                                        ).toString()
+//                                    )
+//                                )
+                            response = api.createTrip(userId = 1, locationList, tripType)
                             response.onSuccess {
                                 navController.navigate(
                                     when (tripType) {
@@ -169,7 +170,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                         color = Color.Red,
                         style = TextStyle(
                             fontFamily = josefinSansFamily,
-                            fontSize = 20.sp,
+                            fontSize = 30.sp,
                         )
                     )
                 }

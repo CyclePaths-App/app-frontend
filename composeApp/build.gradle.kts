@@ -46,6 +46,8 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.compass.geolocation)
+            implementation(libs.compass.geolocation.mobile)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
