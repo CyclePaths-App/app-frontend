@@ -14,6 +14,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,12 +37,16 @@ import cyclepaths.composeapp.generated.resources.Res
 import cyclepaths.composeapp.generated.resources.josefin_sans_bold
 import cyclepaths.composeapp.generated.resources.josefin_sans_italic
 import cyclepaths.composeapp.generated.resources.josefin_sans_regular
+import dev.jordond.compass.Priority
+import dev.jordond.compass.geolocation.LocationRequest
 import dev.jordond.compass.geolocation.MobileGeolocator
 import dev.jordond.compass.geolocation.TrackingStatus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -48,6 +54,32 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun RecordingTripDemo() {
     RecordingTrip(rememberNavController(), TripType.bike)
+}
+
+@Composable
+fun RecordingButton(onClick: () -> Unit, message: String) {
+    Button(
+        onClick = onClick,
+        border = BorderStroke(1.dp, Color.Black),
+        shape = RoundedCornerShape(100),
+        modifier = Modifier.padding(15.dp).size(300.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFFF3958C8)
+        ),
+    ) {
+        Text(
+            message,
+            color = Color.White,
+            style = TextStyle(
+                fontFamily = FontFamily(
+                    Font(Res.font.josefin_sans_regular, FontWeight.Normal),
+                    Font(Res.font.josefin_sans_bold, FontWeight.Bold),
+                    Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
+                ),
+                fontSize = 35.sp,
+            )
+        )
+    }
 }
 
 @Composable
@@ -70,9 +102,39 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                     Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
                 )
                 val api = remember { BackendAPI(BACKEND_URL) }
-                var errorMessge by remember { mutableStateOf<String?>(null) }
+                var errorMessage by remember { mutableStateOf<String?>(null) }
                 var locationList by remember { mutableStateOf(ArrayList<BackendAPI.Location>()) }
+
                 val scope = rememberCoroutineScope()
+
+                val geolocator = remember { MobileGeolocator() }
+                val trackingStatus by geolocator.trackingStatus
+                    .collectAsState(initial = null)
+
+                // Launch effect runs in the background
+                LaunchedEffect(Unit) {
+                    geolocator.trackingStatus.collect { status ->
+                        when (status) { // When a status changes, the collection sends that here
+                            is TrackingStatus.Error -> {
+                                val error = status.cause
+                                errorMessage = "TRACKING ERROR: $error"
+                            }
+
+                            TrackingStatus.Idle -> {}
+                            TrackingStatus.Tracking -> {}
+                            is TrackingStatus.Update -> {
+                                val latitude = status.location.coordinates.latitude
+                                val longitude = status.location.coordinates.longitude
+                                val time = Clock.System.now().toLocalDateTime(TimeZone.UTC)
+                                    .toString()// Whomst designed this API?
+
+                                val currentLocation = BackendAPI.Location(latitude, longitude, time)
+
+                                locationList.add(currentLocation)
+                            }
+                        }
+                    }
+                }
 
                 Box {
                     val textStyle = TextStyle(
@@ -103,68 +165,91 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                         )
                     )
                 }
-
-                val modSpace = Modifier.padding(10.dp)
-
-                Button(
-                    onClick = {
-                        var response: Result<Int>
-                        scope.launch {
+                
+                if (trackingStatus == TrackingStatus.Idle) {
+                    RecordingButton(onClick = {
+                        scope.launch(Dispatchers.IO) {
+                            geolocator.startTracking(
+                                LocationRequest(Priority.HighAccuracy, 1000)
+                            )
+                        }
+                    }, "Start Tracking")
+                } else {
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                geolocator.stopTracking()
 //                            val standardList =
 //                                listOf(
 //                                    BackendAPI.Location(
 //                                        latitude = 42.686261,
 //                                        longitude = -73.828025,
-//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 0).toInstant(
-//                                            TimeZone.UTC
-//                                        ).toString()
+//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 0)
+//                                            .toInstant(TimeZone.UTC)
+//                                            .toString()
 //                                    ),
 //                                    BackendAPI.Location(
 //                                        latitude = 42.686945,
 //                                        longitude = -73.827349,
-//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 15).toInstant(
-//                                            TimeZone.UTC
-//                                        ).toString()
+//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 15)
+//                                            .toInstant(TimeZone.UTC)
+//                                            .toString()
 //                                    ),
 //                                    BackendAPI.Location(
 //                                        latitude = 42.687378,
 //                                        longitude = -73.826919,
-//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 30).toInstant(
-//                                            TimeZone.UTC
-//                                        ).toString()
+//                                        time = LocalDateTime(2025, 9, 20, 18, 5, 30)
+//                                            .toInstant(TimeZone.UTC)
+//                                            .toString()
 //                                    )
 //                                )
-                            response = api.createTrip(userId = 1, locationList, tripType)
-                            response.onSuccess {
-                                navController.navigate(
-                                    when (tripType) {
-                                        TripType.bike -> "cyclestats"
-                                        TripType.walk -> "walkstats"
+                                api.createTrip(userId = 1, locationList, tripType).onSuccess {
+                                    try {
+                                        navController.navigate(
+                                            when (tripType) {
+                                                TripType.bike -> "cyclestats"
+                                                TripType.walk -> "walkstats"
+                                            }
+                                        )
+                                    } catch (e: Error) {
+                                        errorMessage = e.toString()
                                     }
-                                )
-                            }.onFailure {
-                                errorMessge = it.message
+
+                                }.onFailure {
+                                    errorMessage =
+                                        it.message + " LocationList has " + locationList.size + " entries."
+
+                                }
                             }
-                        }
-                    },
-                    border = BorderStroke(1.dp, Color.Black),
-                    shape = RoundedCornerShape(100),
-                    modifier = Modifier.padding(15.dp).size(300.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF3958C8)
-                    ),
-                ) {
-                    Text(
-                        "End Trip",
-                        color = Color.White,
-                        style = TextStyle(
-                            fontFamily = josefinSansFamily,
-                            fontSize = 35.sp,
+                        },
+                        border = BorderStroke(1.dp, Color.Black),
+                        shape = RoundedCornerShape(100),
+                        modifier = Modifier.padding(15.dp).size(300.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFFF3958C8)
+                        ),
+                    ) {
+                        Text(
+                            "End Trip",
+                            color = Color.White,
+                            style = TextStyle(
+                                fontFamily = FontFamily(
+                                    Font(Res.font.josefin_sans_regular, FontWeight.Normal),
+                                    Font(Res.font.josefin_sans_bold, FontWeight.Bold),
+                                    Font(
+                                        Res.font.josefin_sans_italic,
+                                        FontWeight.Normal,
+                                        FontStyle.Italic
+                                    )
+                                ),
+                                fontSize = 35.sp,
+                            )
                         )
-                    )
+                    }
                 }
 
-                errorMessge?.let {
+
+                errorMessage?.let {
                     Text(
                         it,
                         color = Color.Red,
