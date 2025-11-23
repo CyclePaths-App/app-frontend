@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -29,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.cyclepaths.www.components.OutlinedText
 import cyclepaths.composeapp.generated.resources.Res
 import cyclepaths.composeapp.generated.resources.WelcomeBackground
 import cyclepaths.composeapp.generated.resources.cycleoption
@@ -80,32 +80,17 @@ fun Welcome(navController: NavController) {
                     Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
                 )
 
-                Box() {
-                    val textStyle = TextStyle(
+                OutlinedText(
+                    message = "Welcome User! How are you commuting today?",
+                    fillColor = Color.White,
+                    outlineColor = Color.Black,
+                    textAlign = TextAlign.Left,
+                    style = TextStyle(
                         fontFamily = josefinSansFamily,
                         fontStyle = FontStyle.Italic,
                         fontSize = 40.sp,
                     )
-
-                    // Layer 1 (Bottom): The Stroke/Outline
-                    Text(
-                        text = "Welcome User! How are you commuting today?",
-                        style = textStyle.copy(
-                            color = Color.Black,
-                            drawStyle = Stroke(5F)
-                        ),
-                        textAlign = TextAlign.Left
-                    )
-
-                    // Layer 2 (Top): The Solid Fill
-                    Text(
-                        text = "Welcome User! How are you commuting today?",
-                        style = textStyle.copy(
-                            color = Color.White
-                        ),
-                        textAlign = TextAlign.Left
-                    )
-                }
+                )
 
                 Spacer(modifier = Modifier.height(50.dp))
 

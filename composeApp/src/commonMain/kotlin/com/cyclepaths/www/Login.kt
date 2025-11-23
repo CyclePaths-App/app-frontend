@@ -30,9 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +48,7 @@ import cyclepaths.composeapp.generated.resources.josefin_sans_italic
 import cyclepaths.composeapp.generated.resources.josefin_sans_regular
 import cyclepaths.composeapp.generated.resources.loginBKG
 import cyclepaths.composeapp.generated.resources.visible
+import com.cyclepaths.www.components.OutlinedText
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -112,30 +111,15 @@ fun Login(navController: NavController) {
                 var user by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }
 
-                Box {
-                    val textStyle = TextStyle(
-                        fontFamily = josefinSansFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 40.sp,
-                    )
-
-                    // Layer 1 (Bottom): The Stroke/Outline
-                    Text(
-                        text = "CyclePaths",
-                        style = textStyle.copy(
-                            color = Color.Black,
-                            drawStyle = Stroke(5F)
-                        )
-                    )
-
-                    // Layer 2 (Top): The Solid Fill
-                    Text(
-                        text = "CyclePaths",
-                        style = textStyle.copy(
-                            color = Color(0xFFFF850B)
-                        )
-                    )
-                }
+                OutlinedText(
+                    message = "CyclePaths",
+                    outlineColor = Color.Black,
+                    fillColor = Color(0xFFFF850B),
+                    outlineWeight = 5F,
+                    fontFamily = josefinSansFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 40.sp
+                )
 
                 val modSpace = Modifier.padding(10.dp)
 
@@ -223,30 +207,17 @@ fun Login(navController: NavController) {
                     Text("Login", color = Color.White, fontFamily = josefinSansFamily)
                 }
 
-                Box {
-                    val textStyle = TextStyle(
-                        fontFamily = josefinSansFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                    )
-
-                    Text(
-                        text = "Don't have an account?",
-                        style = textStyle.copy(
-                            color = Color.White,
-                            drawStyle = Stroke(5F)
-                        )
-                    )
-
-                    Text(
-                        "Don't have an account?",
-                        style = textStyle.copy(
-                            color = Color(0xFFFF1128F8)
-                        ),
-                        modifier = Modifier
-                            .clickable { navController.navigate("signup") }
-                    )
-                }
+                OutlinedText(
+                    message = "Don't have an account?",
+                    fillColor = Color(0xFFFF1128F8),
+                    outlineColor = Color.White,
+                    fontFamily = josefinSansFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    outlineWeight = 5f,
+                    modifier = Modifier
+                        .clickable { navController.navigate("signup") }
+                )
             }
         }
     }

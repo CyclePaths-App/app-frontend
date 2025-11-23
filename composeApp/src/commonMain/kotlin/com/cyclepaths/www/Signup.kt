@@ -3,7 +3,6 @@ package com.cyclepaths.www
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,7 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -30,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.cyclepaths.www.components.OutlinedText
 import cyclepaths.composeapp.generated.resources.Res
 import cyclepaths.composeapp.generated.resources.josefin_sans_bold
 import cyclepaths.composeapp.generated.resources.josefin_sans_italic
@@ -243,29 +242,16 @@ fun Signup(navController: NavController) {
             Text("Create Account", color = Color.White, fontFamily = josefinSansFamily)
         }
 
-        Box {
-            val textStyle = TextStyle(
-                fontFamily = josefinSansFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-            )
-
-            Text(
-                text = "Have an account already?",
-                style = textStyle.copy(
-                    color = Color.White,
-                    drawStyle = Stroke(5F)
-                )
-            )
-
-            Text(
-                "Have an account already?",
-                style = textStyle.copy(
-                    color = Color(0xFFFF1128F8)
-                ),
-                modifier = Modifier
-                    .clickable { navController.navigate("login") }
-            )
-        }
+        OutlinedText(
+            message = "Have an account already?",
+            outlineColor = Color.White,
+            fillColor = Color(0xFFFF1128F8),
+            fontFamily = josefinSansFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            outlineWeight = 5F,
+            modifier = Modifier
+                .clickable { navController.navigate("login") }
+        )
     }
 }
