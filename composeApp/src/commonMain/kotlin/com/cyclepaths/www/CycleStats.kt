@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -46,12 +47,10 @@ import cyclepaths.composeapp.generated.resources.gear
 import cyclepaths.composeapp.generated.resources.josefin_sans_bold
 import cyclepaths.composeapp.generated.resources.josefin_sans_italic
 import cyclepaths.composeapp.generated.resources.josefin_sans_regular
-import cyclepaths.composeapp.generated.resources.mapoption
 import cyclepaths.composeapp.generated.resources.viewheatmapoption
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-
 
 @Composable
 fun CycleStats(navController: NavController) {
@@ -111,7 +110,8 @@ fun CycleStats(navController: NavController) {
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append("\n2.39 kg-eq\n") // This needs to be a number.
+                            //append("\n2.39 kg-eq\n") // This needs to be a number.
+                            append("\n2.39 kg-eq\n")
                         }
                         append("\nCO2 and cycled\n ")
                         withStyle(
@@ -134,35 +134,39 @@ fun CycleStats(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(45.dp))
 
-                Button(
-                    onClick = { navController.navigate("cyclestats") },
-                    border = BorderStroke(1.dp, Color.White),
-                    shape = RoundedCornerShape(5.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .size(width = 500.dp, height = 70.dp)
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Image(
-                            painter = painterResource(Res.drawable.mapoption),
-                            contentDescription = null,
-                            modifier = Modifier.matchParentSize(),
-                            contentScale = ContentScale.FillBounds
-                        )
+//                Button(
+//                    onClick = { navController.navigate("map") },
+//                    border = BorderStroke(1.dp, Color.White),
+//                    shape = RoundedCornerShape(5.dp),
+//                    contentPadding = PaddingValues(0.dp),
+//                    modifier = Modifier
+//                        .padding(15.dp)
+//                        .size(width = 500.dp, height = 70.dp)
+//                ) {
+//                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                        Image(
+//                            painter = painterResource(Res.drawable.mapoption),
+//                            contentDescription = null,
+//                            modifier = Modifier.matchParentSize(),
+//                            contentScale = ContentScale.FillBounds
+//                        )
+//
+//                        Text(
+//                            "Map Route",
+//                            color = Color.Black,
+//                            fontFamily = josefinSansFamily,
+//                            fontSize = 30.sp,
+//                            textAlign = TextAlign.Center
+//                        )
+//                    }
+//                }
 
-                        Text(
-                            "Map Route",
-                            color = Color.Black,
-                            fontFamily = josefinSansFamily,
-                            fontSize = 30.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
+                val uriHandler = LocalUriHandler.current
 
                 Button(
-                    onClick = { /*This needs to navigate to the desktop web page*/ },
+                    onClick = {
+                        uriHandler.openUri("http://10.0.2.2:5173/")
+                    },
                     border = BorderStroke(1.dp, Color.White),
                     shape = RoundedCornerShape(5.dp),
                     contentPadding = PaddingValues(0.dp),
@@ -187,7 +191,6 @@ fun CycleStats(navController: NavController) {
                         )
                     }
                 }
-
                 WeeklyCycleBadges()
             }
         }
@@ -199,12 +202,12 @@ fun WeeklyCycleBadges() {
     val scope = rememberCoroutineScope()
     var totalMiles by remember { mutableStateOf<Double?>(0.0) }
     val api = remember { BackendAPI(BACKEND_URL) }
-    val userId = SessionManager.currentUserId
+    val userId = SessionManager.currentUser?.id
 
     LaunchedEffect(userId) {
         scope.launch {
             try {
-                totalMiles = userId?.let { api.getTotalDistanceMiles(it) }
+                totalMiles = userId?.let { api.getTotalDistanceMiles(userId = it) }
             } catch (e: Exception) {
                 println("Error fetching total distance: ${e.message}")
             }
@@ -269,11 +272,11 @@ fun WeeklyCycleBadges() {
  * Fetch the total miles walked by the user.
  */
 @Composable
-fun CycleMiles(): Double? {
+fun cycleMiles(): Double? {
     val scope = rememberCoroutineScope()
     var totalMiles by remember { mutableStateOf<Double?>(0.0) }
     val api = remember { BackendAPI(BACKEND_URL) }
-    val userId = SessionManager.currentUserId
+    val userId = SessionManager.currentUser?.id
 
     LaunchedEffect(userId) {
         scope.launch {
@@ -291,11 +294,13 @@ fun CycleMiles(): Double? {
  * Calculate the CO2 saved by the user.
  */
 @Composable
-fun CalculateCycleCO2() {
+fun calculateCycleCO2(): Double? {
     /*
     vehicle_conversion =0.1286 kg CO2-eq/km for battery electric vehicles.
     0.2032 kg CO2-eq/km for internal combustion engines. Convert miles to km or this to CO2-eq/mile
     bike_conversion= 0.0296-0.0818 kg CO2-eq/km for biking (we can take the average or median and use it, need to convert for miles too)
     CO2_saved = (miles * vehicle_conversion) – (miles * bike_conversion)
      */
+    val miles = cycleMiles()
+    return (miles?.times(0.1286))?.minus((miles.times(0.0557)))
 }

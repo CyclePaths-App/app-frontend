@@ -1,6 +1,5 @@
 package com.cyclepaths.www
 
-import androidx.collection.mutableLongSetOf
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +36,6 @@ import cyclepaths.composeapp.generated.resources.Res
 import cyclepaths.composeapp.generated.resources.josefin_sans_bold
 import cyclepaths.composeapp.generated.resources.josefin_sans_italic
 import cyclepaths.composeapp.generated.resources.josefin_sans_regular
-import dev.jordond.compass.geolocation.TrackingStatus
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.ui.tooling.preview.Preview

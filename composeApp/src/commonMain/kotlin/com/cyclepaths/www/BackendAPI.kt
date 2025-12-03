@@ -14,6 +14,7 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
+import kotlin.collections.mapOf
 
 
 class BackendAPI(baseUrl: String) {
@@ -25,10 +26,6 @@ class BackendAPI(baseUrl: String) {
     }
 
     private val baseUrl = baseUrl
-
-    suspend fun getUser(userId: Int): User {
-        return client.get("$baseUrl/users/$userId").body()
-    }
 
     suspend fun getTrips(userId: Int): List<Trip> {
         return client.get("$baseUrl/users/$userId/trips").body()
@@ -79,6 +76,41 @@ class BackendAPI(baseUrl: String) {
         return client.get("$baseUrl/trips/$tripId/points").body()
     }
 
+    /**
+     * This is for a full trip that includes distance.
+     */
+    @Serializable
+    private data class CreateTripFull(
+        val tripID: Int,
+        val userID: Int,
+        val distance: Int,
+        val tripType: TripType
+    )
+
+//    suspend fun createUserTrip(
+//        tripID: Int,
+//        userID: Int,
+//        distance: Int,
+//        tripType: TripType
+//    ): Result<Int> {
+//        val res = try {
+//            client.post("$baseUrl/users/") {
+//                contentType(ContentType.Application.Json)
+//                setBody(CreateUser(username, firstName, lastName, email, password))
+//            }
+//        } catch (e: Exception) {
+//            return Result.failure(Exception("Client error: ${e.message}"))
+//        }
+//
+//        return when (res.status.value) {
+//            in 200..299 -> Result.success(res.body<CreateUserRes>().id)
+//            400 -> Result.failure(Exception("Bad Request"))
+//            409 -> Result.failure(Exception("User already exists"))
+//            500 -> Result.failure(Exception("Internal Server Error"))
+//            else -> Result.failure(Exception("Unknown Error"))
+//        }
+//    }
+
     suspend fun getTotalDistanceMeters(userId: Int): Int {
         val trips = getTrips(userId)
         return trips.sumOf { it.distance }
@@ -88,23 +120,68 @@ class BackendAPI(baseUrl: String) {
         return getTotalDistanceMeters(userId) / 1609.34
     }
 
-    suspend fun createUser(user: User): User {
-        return client.post("$baseUrl/users") {
-            contentType(ContentType.Application.Json)
-            setBody(user)
-        }.body()
+    @Serializable
+    private data class CreateUser(
+        val username: String,
+        val first_name: String,
+        val last_name: String,
+        val email: String,
+        val password: String
+    )
+
+    @Serializable
+    private data class CreateUserRes(val id: Int)
+
+    suspend fun createUser(
+        username: String,
+        firstName: String,
+        lastName: String,
+        email: String,
+        password: String
+    ): Result<Int> {
+        val res = try {
+            client.post("$baseUrl/users/") {
+                contentType(ContentType.Application.Json)
+                setBody(CreateUser(username, firstName, lastName, email, password))
+            }
+        } catch (e: Exception) {
+            return Result.failure(Exception("Client error: ${e.message}"))
+        }
+
+        return when (res.status.value) {
+            in 200..299 -> Result.success(res.body<CreateUserRes>().id)
+            400 -> Result.failure(Exception("Bad Request"))
+            409 -> Result.failure(Exception("User already exists"))
+            500 -> Result.failure(Exception("Internal Server Error"))
+            else -> Result.failure(Exception("Unknown Error"))
+        }
     }
 
-    suspend fun sendLogin(username: String, password: String): User? {
-        return try {
-            val response = client.post("$baseUrl/login") {
+    suspend fun getUser(username: String): User {
+        return client.get("$baseUrl/users/$username").body()
+    }
+
+    @Serializable
+    private data class UserLogin(
+        val username: String,
+        val password: String
+    )
+    suspend fun sendLogin(username: String, password: String): Result<User> {
+        val res = try {
+            client.post("$baseUrl/users/login") {
                 contentType(ContentType.Application.Json)
-                setBody(mapOf("username" to username, "password" to password))
+                setBody(UserLogin(username, password))
             }
-            response.body<User>()
         } catch (e: Exception) {
-            println("Login failed: ${e.message}")
-            null
+            return Result.failure(Exception("Client error: ${e.message}"))
+        }
+
+        return when (res.status.value) {
+            in 200..299 -> Result.success(res.body<User>())
+            400 -> Result.failure(Exception("Bad Request"))
+            409 -> Result.failure(Exception("User already exists"))
+            500 -> Result.failure(Exception("Internal Server Error"))
+            else -> Result.failure(Exception("Unknown Error"))
         }
     }
 
