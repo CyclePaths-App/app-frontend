@@ -143,6 +143,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                                 }.onFailure {
                                     errorMessage = it.message
                                 }
+
                             }
                         },
                         "End trip",

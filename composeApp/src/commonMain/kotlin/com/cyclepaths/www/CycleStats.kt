@@ -272,7 +272,7 @@ fun WeeklyCycleBadges() {
  * Fetch the total miles walked by the user.
  */
 @Composable
-fun cycleMiles(): Double? {
+fun CycleMiles(): Double? {
     val scope = rememberCoroutineScope()
     var totalMiles by remember { mutableStateOf<Double?>(0.0) }
     val api = remember { BackendAPI(BACKEND_URL) }
@@ -294,13 +294,14 @@ fun cycleMiles(): Double? {
  * Calculate the CO2 saved by the user.
  */
 @Composable
-fun calculateCycleCO2(): Double? {
+
+fun CalculateCycleCO2(): Double? {
     /*
     vehicle_conversion =0.1286 kg CO2-eq/km for battery electric vehicles.
     0.2032 kg CO2-eq/km for internal combustion engines. Convert miles to km or this to CO2-eq/mile
     bike_conversion= 0.0296-0.0818 kg CO2-eq/km for biking (we can take the average or median and use it, need to convert for miles too)
     CO2_saved = (miles * vehicle_conversion) – (miles * bike_conversion)
      */
-    val miles = cycleMiles()
+    val miles = CycleMiles();
     return (miles?.times(0.1286))?.minus((miles.times(0.0557)))
 }
