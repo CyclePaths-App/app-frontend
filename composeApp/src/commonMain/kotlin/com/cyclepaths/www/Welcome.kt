@@ -148,7 +148,7 @@ fun Welcome(navController: NavController) {
                     shape = RoundedCornerShape(5.dp),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier
-                        .padding(15.dp)
+                        .padding(vertical = 15.dp)
                         .size(width = 500.dp, height = 70.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

@@ -54,6 +54,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.log
 
 
 @Composable
@@ -68,7 +69,6 @@ fun App() {
             composable("welcome") { Welcome(navController) }
             composable("walkstats") { WalkStats(navController) }
             composable("cyclestats") { CycleStats(navController) }
-            composable("map") { Map(navController) }
             composable("bikeTrip") { RecordingTrip(navController, TripType.bike) }
             composable("walkTrip") { RecordingTrip(navController, TripType.walk) }
         })
@@ -202,16 +202,15 @@ fun Login(navController: NavController) {
                 Button(
                     onClick = {
                         scope.launch {
-                            val loggedInUser = api.sendLogin(user, password)
-                            if (loggedInUser != null) {
+                            try {
+                                val loggedInUser = api.sendLogin(user, password).getOrThrow()
+                                SessionManager.currentUser = loggedInUser
                                 println("Logged in as: ${loggedInUser.username}")
-                                SessionManager.currentUserId = loggedInUser.id
                                 navController.navigate("welcome")
-                            } else {
-                                println("Invalid credentials")
+                            } catch (e: Exception) {
+                                println("Error logging in user: ${e.message}")
                             }
                         }
-                        navController.navigate("welcome")
                     },
                     border = BorderStroke(1.dp, Color.Black),
                     shape = RoundedCornerShape(5.dp),

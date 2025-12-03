@@ -16,6 +16,8 @@ kotlin = "2.2.20"
 ktor = "3.0.0"
 kotlinxDateTime = "0.4.0"
 compass = "2.4.1"
+kmpMaps = "0.4.0"
+constraintlayout = "2.2.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -37,6 +39,13 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDateTime" }
 compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
 compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
+# For native map (Apple Maps on iOS, Google Maps on Android)
+swmansion-kmpMaps-core = { module = "com.swmansion.kmpmaps:core", version.ref = "kmpMaps" }
+
+# For Google Maps (Google Maps on both platforms)
+swmansion-kmpMaps-googleMaps = { module = "com.swmansion.kmpmaps:google-maps", version.ref = "kmpMaps" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

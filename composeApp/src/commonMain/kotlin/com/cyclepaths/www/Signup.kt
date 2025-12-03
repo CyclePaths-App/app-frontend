@@ -111,7 +111,7 @@ fun Signup(navController: NavController) {
 
             OutlinedTextField(
                 value = lastName,
-                onValueChange = { firstName = it },
+                onValueChange = { lastName = it },
                 placeholder = { Text("Last name") },
                 shape = RoundedCornerShape(5.dp),
                 modifier = modSpace,
@@ -155,7 +155,7 @@ fun Signup(navController: NavController) {
 
             OutlinedTextField(
                 value = username,
-                onValueChange = { email = it },
+                onValueChange = { username = it },
                 placeholder = { Text("Username") },
                 shape = RoundedCornerShape(5.dp),
                 modifier = modSpace,
@@ -219,19 +219,12 @@ fun Signup(navController: NavController) {
             onClick = {
                 scope.launch {
                     try {
-                        val newUser = User(
-                            id = 0,
-                            username = username,
-                            email = email,
-                            password = password
-                        )
-                        val createdUser = api.createUser(newUser)
-                        println("Created user: ${createdUser.username}")
+                        api.createUser(username, firstName, lastName, email, password)
+                        println("Created user: ${username}")
+                        navController.navigate("login")
                     } catch (e: Exception) {
                         println("Error creating user: ${e.message}")
                     }
-
-                    navController.navigate("login")
                 }
             },
             shape = RoundedCornerShape(5.dp),

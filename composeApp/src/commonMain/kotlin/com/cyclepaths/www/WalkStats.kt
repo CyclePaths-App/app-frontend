@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -140,35 +141,39 @@ fun WalkStats(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(45.dp))
 
-                Button(
-                    onClick = { navController.navigate("cyclestats") },
-                    border = BorderStroke(1.dp, Color.White),
-                    shape = RoundedCornerShape(5.dp),
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .size(width = 500.dp, height = 70.dp)
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Image(
-                            painter = painterResource(Res.drawable.mapoption),
-                            contentDescription = null,
-                            modifier = Modifier.matchParentSize(),
-                            contentScale = ContentScale.FillBounds
-                        )
+//                Button(
+//                    onClick = { navController.navigate("cyclestats") },
+//                    border = BorderStroke(1.dp, Color.White),
+//                    shape = RoundedCornerShape(5.dp),
+//                    contentPadding = PaddingValues(0.dp),
+//                    modifier = Modifier
+//                        .padding(15.dp)
+//                        .size(width = 500.dp, height = 70.dp)
+//                ) {
+//                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                        Image(
+//                            painter = painterResource(Res.drawable.mapoption),
+//                            contentDescription = null,
+//                            modifier = Modifier.matchParentSize(),
+//                            contentScale = ContentScale.FillBounds
+//                        )
+//
+//                        Text(
+//                            "Map Route",
+//                            color = Color.Black,
+//                            fontFamily = josefinSansFamily,
+//                            fontSize = 30.sp,
+//                            textAlign = TextAlign.Center
+//                        )
+//                    }
+//                }
 
-                        Text(
-                            "Map Route",
-                            color = Color.Black,
-                            fontFamily = josefinSansFamily,
-                            fontSize = 30.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
+                val uriHandler = LocalUriHandler.current
 
                 Button(
-                    onClick = { /*This needs to navigate to the desktop web page*/ },
+                    onClick = {
+                        uriHandler.openUri("http://10.0.2.2:5173/")
+                    },
                     border = BorderStroke(1.dp, Color.White),
                     shape = RoundedCornerShape(5.dp),
                     contentPadding = PaddingValues(0.dp),
@@ -265,7 +270,7 @@ fun CalculateMiles(): Double? {
     val scope = rememberCoroutineScope()
     var totalMiles by remember { mutableStateOf<Double?>(0.0) }
     val api = remember { BackendAPI(BACKEND_URL) }
-    val userId = SessionManager.currentUserId
+    val userId = SessionManager.currentUser?.id
 
     LaunchedEffect(userId) {
         scope.launch {

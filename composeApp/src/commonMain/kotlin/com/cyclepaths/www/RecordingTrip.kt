@@ -143,7 +143,14 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                                     }
                                 )
                             }.onFailure {
-                                errorMessge = it.message
+                                // Just temporary.
+                                navController.navigate(
+                                    when (tripType) {
+                                        TripType.bike -> "cyclestats"
+                                        TripType.walk -> "walkstats"
+                                    }
+                                )
+                                //errorMessge = it.message
                             }
                         }
                     },

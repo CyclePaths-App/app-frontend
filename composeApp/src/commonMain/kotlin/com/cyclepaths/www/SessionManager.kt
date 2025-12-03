@@ -1,5 +1,5 @@
 package com.cyclepaths.www
 
 object SessionManager {
-    var currentUserId: Int? = null
+    var currentUser: User? = null
 }
