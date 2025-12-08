@@ -16,12 +16,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        AppContext.setActivity(this)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                arrayOf(
+                    Manifest.permission.FOREGROUND_SERVICE_LOCATION,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ),
                 0
             )
+
         }
 
         setContent {

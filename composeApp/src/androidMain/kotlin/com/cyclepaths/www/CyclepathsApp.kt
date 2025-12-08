@@ -22,6 +22,6 @@ class CyclepathsApp : Application() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        AppContext.setUp(applicationContext)
+        AppContext.setContext(applicationContext)
     }
 }
