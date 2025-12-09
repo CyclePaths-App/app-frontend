@@ -81,7 +81,7 @@ fun Welcome(navController: NavController) {
                 )
 
                 OutlinedText(
-                    message = "Welcome User! How are you commuting today?",
+                    message = "Welcome ${SessionManager.currentUser!!.username}! How are you commuting today?",
                     fillColor = Color.White,
                     outlineColor = Color.Black,
                     textAlign = TextAlign.Left,

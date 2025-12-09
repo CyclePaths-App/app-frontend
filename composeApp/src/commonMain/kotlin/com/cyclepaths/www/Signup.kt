@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.cyclepaths.www.components.OutlinedText
 import cyclepaths.composeapp.generated.resources.Res
 import cyclepaths.composeapp.generated.resources.eye
 import cyclepaths.composeapp.generated.resources.josefin_sans_bold
@@ -49,7 +50,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
 
 @Composable
 @Preview
@@ -321,18 +321,13 @@ fun Signup(navController: NavController) {
             onClick = {
                 scope.launch {
                     try {
-//                        api.createUser(username, firstName, lastName, email, password)
-                        if (api.createUser(
-                                username,
-                                firstName,
-                                lastName,
-                                email,
-                                password
-                            ).isSuccess
-                        ) {
-                            println("Created user: ${username}")
-                            navController.navigate("login")
-                        }
+                        api.createUser(username, firstName, lastName, email, password)
+                            .onSuccess { id ->
+                                SessionManager.currentUser =
+                                    User(id, username, firstName, lastName, email, password)
+                                navController.navigate("welcome")
+                            }
+                        println("Created user: ${username}")
                     } catch (e: Exception) {
                         println("Error creating user: ${e.message}")
                     }
@@ -347,29 +342,16 @@ fun Signup(navController: NavController) {
             Text("Create Account", color = Color.White, fontFamily = josefinSansFamily)
         }
 
-        Box {
-            val textStyle = TextStyle(
-                fontFamily = josefinSansFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp,
-            )
-
-            Text(
-                text = "Have an account already?",
-                style = textStyle.copy(
-                    color = Color.White,
-                    drawStyle = Stroke(5F)
-                )
-            )
-
-            Text(
-                "Have an account already?",
-                style = textStyle.copy(
-                    color = Color(0xFFFF1128F8)
-                ),
-                modifier = Modifier
-                    .clickable { navController.navigate("login") }
-            )
-        }
+        OutlinedText(
+            message = "Have an account already?",
+            outlineColor = Color.White,
+            fillColor = Color(0xFFFF1128F8),
+            fontFamily = josefinSansFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            outlineWeight = 5F,
+            modifier = Modifier
+                .clickable { navController.navigate("login") }
+        )
     }
 }
