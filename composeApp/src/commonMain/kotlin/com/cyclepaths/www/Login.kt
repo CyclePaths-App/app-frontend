@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +40,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
 import cyclepaths.composeapp.generated.resources.Res
@@ -50,36 +53,31 @@ import cyclepaths.composeapp.generated.resources.loginBKG
 import cyclepaths.composeapp.generated.resources.visible
 import com.cyclepaths.www.components.OutlinedText
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun App() {
+fun App(prefs: DataStore<Preferences>) {
     // Initialize the navigation controller only once
     val navController = rememberNavController()
-
+    
     MaterialTheme {
         NavHost(navController, startDestination = "login", builder = {
-            composable("login") { Login(navController) }
+            composable("login") { Login(navController, prefs) }
             composable("signup") { Signup(navController) }
-            composable("welcome") { Welcome(navController) }
+            composable("welcome") { Welcome(navController, prefs) }
             composable("walkstats") { WalkStats(navController) }
             composable("cyclestats") { CycleStats(navController) }
-            composable("bikeTrip") { RecordingTrip(navController, TripType.bike) }
-            composable("walkTrip") { RecordingTrip(navController, TripType.walk) }
+            composable("bikeTrip") { RecordingTrip(navController, TripType.bike, prefs) }
+            composable("walkTrip") { RecordingTrip(navController, TripType.walk, prefs) }
         })
     }
 }
 
-@Preview
 @Composable
-fun AppPreview() {
-    App()
-}
-
-@Composable
-fun Login(navController: NavController) {
+fun Login(navController: NavController, prefs: DataStore<Preferences>) {
     MaterialTheme {
         Box {
             Image(
@@ -108,6 +106,7 @@ fun Login(navController: NavController) {
                 val scope = rememberCoroutineScope()
                 var user by remember { mutableStateOf("") }
                 var password by remember { mutableStateOf("") }
+                var errorMessage by remember { mutableStateOf<String?>(null) }
 
                 OutlinedText(
                     message = "CyclePaths",
@@ -184,13 +183,12 @@ fun Login(navController: NavController) {
                 Button(
                     onClick = {
                         scope.launch {
-                            try {
-                                val loggedInUser = api.sendLogin(user, password).getOrThrow()
-                                SessionManager.currentUser = loggedInUser
+                            api.sendLogin(user, password).onSuccess { loggedInUser ->
+                                setUser(prefs, loggedInUser)
                                 println("Logged in as: ${loggedInUser.username}")
                                 navController.navigate("welcome")
-                            } catch (e: Exception) {
-                                println("Error logging in user: ${e.message}")
+                            }.onFailure {
+                                errorMessage = it.message
                             }
                         }
                     },
@@ -215,6 +213,17 @@ fun Login(navController: NavController) {
                     modifier = Modifier
                         .clickable { navController.navigate("signup") }
                 )
+
+                errorMessage?.let {
+                    Text(
+                        it,
+                        color = Color.Red,
+                        style = TextStyle(
+                            fontFamily = josefinSansFamily,
+                            fontSize = 30.sp,
+                        )
+                    )
+                }
             }
         }
     }

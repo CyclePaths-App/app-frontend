@@ -28,7 +28,7 @@ class BackendAPI(baseUrl: String) {
     private val baseUrl = baseUrl
 
     suspend fun getTrips(userId: Int): List<Trip> {
-        return client.get("$baseUrl/users/$userId/trips").body()
+        return client.get("$baseUrl/trips/userid/$userId").body()
     }
 
     @Serializable

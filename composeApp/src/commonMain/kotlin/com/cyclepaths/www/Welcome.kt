@@ -16,6 +16,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +29,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavController
 import com.cyclepaths.www.components.OutlinedText
 import cyclepaths.composeapp.generated.resources.Res
@@ -37,11 +42,12 @@ import cyclepaths.composeapp.generated.resources.josefin_sans_bold
 import cyclepaths.composeapp.generated.resources.josefin_sans_italic
 import cyclepaths.composeapp.generated.resources.josefin_sans_regular
 import cyclepaths.composeapp.generated.resources.walkoption
+import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun Welcome(navController: NavController) {
+fun Welcome(navController: NavController, prefs: DataStore<Preferences>) {
     MaterialTheme {
         Box {
             Image(
@@ -79,9 +85,13 @@ fun Welcome(navController: NavController) {
                     Font(Res.font.josefin_sans_bold, FontWeight.Bold),
                     Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
                 )
+                val username by prefs.data.map {
+                    val usernameKey = stringPreferencesKey("username")
+                    it[usernameKey] ?: ""
+                }.collectAsState("")
 
                 OutlinedText(
-                    message = "Welcome ${SessionManager.currentUser!!.username}! How are you commuting today?",
+                    message = "Welcome ${username}! How are you commuting today?",
                     fillColor = Color.White,
                     outlineColor = Color.Black,
                     textAlign = TextAlign.Left,

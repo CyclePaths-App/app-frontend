@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.cyclepaths.www.components.OutlinedText
@@ -39,12 +41,6 @@ import cyclepaths.composeapp.generated.resources.josefin_sans_regular
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-@Preview
-@Composable
-fun RecordingTripDemo() {
-    RecordingTrip(rememberNavController(), TripType.bike)
-}
 
 @Composable
 fun RecordingButton(onClick: () -> Unit, message: String, enabled: Boolean) {
@@ -74,7 +70,7 @@ fun RecordingButton(onClick: () -> Unit, message: String, enabled: Boolean) {
 }
 
 @Composable
-fun RecordingTrip(navController: NavController, tripType: TripType) {
+fun RecordingTrip(navController: NavController, tripType: TripType, prefs: DataStore<Preferences>) {
     val josefinSansFamily = FontFamily(
         Font(Res.font.josefin_sans_regular, FontWeight.Normal),
         Font(Res.font.josefin_sans_bold, FontWeight.Bold),
@@ -133,17 +129,22 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                                 tracker.stopTracking()// Stop tracking to prevent overlapping thread nonsense.
                                 isTracking = false
 
-                                api.createTrip(userId = 1, tracker.trip, tripType).onSuccess {
-                                    navController.navigate(
-                                        when (tripType) {
-                                            TripType.bike -> "cyclestats"
-                                            TripType.walk -> "walkstats"
-                                        }
-                                    )
-                                }.onFailure {
-                                    errorMessage = it.message
+                                val userId = getUser(prefs).id
+                                if (userId == -1) {
+                                    navController.navigate("login")
                                 }
 
+                                api.createTrip(userId, tracker.trip, tripType)
+                                    .onSuccess {
+                                        navController.navigate(
+                                            when (tripType) {
+                                                TripType.bike -> "cyclestats"
+                                                TripType.walk -> "walkstats"
+                                            }
+                                        )
+                                    }.onFailure {
+                                        errorMessage = it.message
+                                    }
                             }
                         },
                         "End trip",

@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 
@@ -22,7 +23,6 @@ class MainActivity : ComponentActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(
-                    Manifest.permission.FOREGROUND_SERVICE_LOCATION,
                     Manifest.permission.POST_NOTIFICATIONS,
                 ),
                 0
@@ -31,13 +31,9 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            App()
+            App(
+                prefs = remember { createDataStore(applicationContext) }
+            )
         }
     }
-}
-
-@Preview
-@Composable
-fun AppAndroidPreview() {
-    App()
 }

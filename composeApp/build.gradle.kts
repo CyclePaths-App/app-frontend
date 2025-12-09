@@ -48,6 +48,8 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.compass.geolocation)
             implementation(libs.compass.geolocation.mobile)
+            api(libs.datastore.preferences)
+            api(libs.datastore)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
