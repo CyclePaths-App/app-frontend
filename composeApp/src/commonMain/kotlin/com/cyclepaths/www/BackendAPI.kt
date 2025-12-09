@@ -115,13 +115,36 @@ class BackendAPI(baseUrl: String) {
         }
     }
 
-    suspend fun getTotalDistanceMeters(userId: Int): Int {
+    suspend fun getTotalDistanceMetersWalk(userId: Int): Int {
         val trips = getTrips(userId)
-        return trips.sumOf { it.distance }
+        var sum = 0
+
+        for (trip in trips) {
+            if (trip.trip_type == TripType.walk) {
+                sum += trip.distance
+            }
+        }
+        return sum;
     }
 
-    suspend fun getTotalDistanceMiles(userId: Int): Double {
-        return getTotalDistanceMeters(userId) / 1609.34
+    suspend fun getTotalDistanceMilesWalk(userId: Int): Double {
+        return getTotalDistanceMetersWalk(userId) * 0.0006213712
+    }
+
+    suspend fun getTotalDistanceMetersCycle(userId: Int): Int {
+        val trips = getTrips(userId)
+        var sum = 0
+
+        for (trip in trips) {
+            if (trip.trip_type == TripType.bike) {
+                sum += trip.distance
+            }
+        }
+        return sum;
+    }
+
+    suspend fun getTotalDistanceMilesCycle(userId: Int): Double {
+        return getTotalDistanceMetersCycle(userId) * 0.0006213712
     }
 
     @Serializable

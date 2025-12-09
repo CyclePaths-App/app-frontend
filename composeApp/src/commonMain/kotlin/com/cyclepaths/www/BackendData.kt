@@ -21,9 +21,9 @@ data class User(
 @Serializable
 data class Trip(
     val id: Int,
-    val userId: Int,
+    val user_id: Int,
     val distance: Int,
-    val tripType: TripType
+    val trip_type: TripType
 )
 
 /**

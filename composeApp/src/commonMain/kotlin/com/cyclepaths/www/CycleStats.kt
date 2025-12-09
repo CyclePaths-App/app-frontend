@@ -58,8 +58,11 @@ import cyclepaths.composeapp.generated.resources.walkoption
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import kotlin.math.roundToInt
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.text.intl.Locale
+import kotlinx.serialization.StringFormat
+import kotlin.math.round
+
 
 @Composable
 fun CycleStats(navController: NavController) {
@@ -113,34 +116,35 @@ fun CycleStats(navController: NavController) {
                 Text(
                     buildAnnotatedString {
                         append("You saved\n")
+
                         withStyle(
                             SpanStyle(
                                 color = Color(0xFF9958F9),
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            //append("\n2.39 kg-eq\n") // This needs to be a number.
-                            append("\n2.39 kg-eq\n")
+                            append("${CO2SavedCombustion()} kg-eq CO2 compared to combustion vehicles\n")
+                            append("${CO2SavedElectric()} kg-eq CO2 compared to electric vehicles\n")
                         }
-                        append("\nCO2 and cycled\n ")
+
+                        append("\nYou cycled\n")
+
                         withStyle(
                             SpanStyle(
                                 color = Color(0xFF9958F9),
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append("\n13.5") // This needs to be a number.
+                            append("${CycleMiles()} miles\n")
                         }
-                        append(" km!")
                     },
                     color = Color(0xFFA8A4FF),
                     textAlign = TextAlign.Center,
-                    fontSize = 50.sp,
+                    fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    lineHeight = 38.sp
                 )
-
                 Spacer(modifier = Modifier.height(45.dp))
 
                 val uriHandler = LocalUriHandler.current
@@ -179,79 +183,10 @@ fun CycleStats(navController: NavController) {
     }
 }
 
-//@Composable
-//fun WeeklyCycleBadges() {
-//    val scope = rememberCoroutineScope()
-//    var totalMiles by remember { mutableStateOf<Double?>(0.0) }
-//    val api = remember { BackendAPI(BACKEND_URL) }
-//    val userId = SessionManager.currentUser?.id
-//
-//    LaunchedEffect(userId) {
-//        scope.launch {
-//            try {
-//                totalMiles = userId?.let { api.getTotalDistanceMiles(userId = it) }
-//            } catch (e: Exception) {
-//                println("Error fetching total distance: ${e.message}")
-//            }
-//        }
-//    }
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(32.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Top
-//    ) {
-//        Text(
-//            "Badge of the Week",
-//            fontWeight = FontWeight.Bold,
-//            fontSize = 40.sp,
-//            color = Color.White
-//        )
-//
-//        if (totalMiles == null) {
-//            Text(
-//                "Badge unlocked: You cycled 10 km!",
-//                color = Color.White,
-//                fontSize = 32.sp,
-//                fontWeight = FontWeight.Light
-//            )
-//        } else {
-//            Row {
-//                if (totalMiles!! >= 10.0) {
-//                    Image(
-//                        painter = painterResource(Res.drawable.badge),
-//                        contentDescription = null,
-//                    )
-//
-//                    Text(
-//                        "Badge unlocked: 10 Miles!",
-//                        fontSize = 24.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color(0xFF9958F9),
-//                        modifier = Modifier.padding(top = 16.dp)
-//                    )
-//                }
-//            }
-//
-//        }
-//
-//        TextButton(
-//            onClick = { /*TODO*/ }
-//        ) {
-//            Text(
-//                "See All Badges >",
-//                fontWeight = FontWeight.Bold,
-//                fontSize = 40.sp,
-//                color = Color.White,
-//            )
-//        }
-//    }
-//}
+
 
 /**
- * Fetch the total miles walked by the user.
+ * Fetch the total miles cycled by the user.
  */
 @Composable
 fun CycleMiles(): Double? {
@@ -263,7 +198,7 @@ fun CycleMiles(): Double? {
     LaunchedEffect(userId) {
         scope.launch {
             try {
-                totalMiles = userId?.let { api.getTotalDistanceMiles(it) }
+                totalMiles = userId?.let { api.getTotalDistanceMilesCycle(it) }
             } catch (e: Exception) {
                 println("Error fetching total distance: ${e.message}")
             }
@@ -273,16 +208,39 @@ fun CycleMiles(): Double? {
 }
 
 /**
- * Calculate the CO2 saved by the user.
+ * Calculate the CO2 saved by the user for combustion vehicles.
  */
 @Composable
-fun CalculateCycleCO2(): Double? {
+fun CO2SavedCombustion(): Double? {
     /*
-    vehicle_conversion =0.1286 kg CO2-eq/km for battery electric vehicles.
-    0.2032 kg CO2-eq/km for internal combustion engines. Convert miles to km or this to CO2-eq/mile
+    electric vehicle = 0.1286 kg CO2-eq/km for battery electric vehicles.
+    combustion vehicle = 0.2032 kg CO2-eq/km for internal combustion engines. Convert miles to km or this to CO2-eq/mile
     bike_conversion= 0.0296-0.0818 kg CO2-eq/km for biking (we can take the average or median and use it, need to convert for miles too)
     CO2_saved = (miles * vehicle_conversion) – (miles * bike_conversion)
      */
-    val miles = CycleMiles();
-    return (miles?.times(0.1286))?.minus((miles.times(0.0557)))
+    val miles = CycleMiles() ?: return null
+    val combustionVehicle = 0.1262626263 // in miles
+    val bike = 0.0183925873 // in miles
+    val CO2Saved = (miles * combustionVehicle) - (miles * bike)
+
+    return (round(CO2Saved * 100.0) / 100.0)
+}
+
+/**
+ * Calculate the CO2 saved by the user for electric vehicles.
+ */
+@Composable
+fun CO2SavedElectric(): Double? {
+    /*
+    electric vehicle = 0.1286 kg CO2-eq/km for battery electric vehicles.
+    combustion vehicle = 0.2032 kg CO2-eq/km for internal combustion engines. Convert miles to km or this to CO2-eq/mile
+    bike_conversion= 0.0296-0.0818 kg CO2-eq/km for biking (we can take the average or median and use it, need to convert for miles too)
+    CO2_saved = (miles * vehicle_conversion) – (miles * bike_conversion)
+     */
+    val miles = CycleMiles() ?: return null
+    val electricVehicle = 0.0799083353 // in miles
+    val bike = 0.0183925873 // in miles
+    val CO2Saved = (miles * electricVehicle) - (miles * bike)
+
+    return (round(CO2Saved * 100.0) / 100.0)
 }
