@@ -198,69 +198,69 @@ fun WalkStats(navController: NavController) {
                         )
                     }
                 }
-                WeeklyBadges()
+                //WeeklyBadges()
             }
         }
     }
 }
 
-@Composable
-fun WeeklyBadges() {
-    val totalMiles = CalculateMiles()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        Text(
-            "Badge of the Week",
-            fontWeight = FontWeight.Bold,
-            fontSize = 40.sp,
-            color = Color.White
-        )
-
-        if (totalMiles == null) {
-            Text(
-                "Loading stats...",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Light
-            )
-        } else {
-            Row {
-                if (totalMiles >= 10.0) {
-                    Image(
-                        painter = painterResource(Res.drawable.badge),
-                        contentDescription = null,
-                    )
-
-                    Text(
-                        "Badge unlocked: 10 Miles!",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF9958F9),
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                }
-            }
-
-        }
-
-        TextButton(
-            onClick = { /*TODO*/ }
-        ) {
-            Text(
-                "See All Badges >",
-                fontWeight = FontWeight.Bold,
-                fontSize = 40.sp,
-                color = Color.White,
-            )
-        }
-    }
-}
+//@Composable
+//fun WeeklyBadges() {
+//    val totalMiles = CalculateMiles()
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(32.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Top
+//    ) {
+//        Text(
+//            "Badge of the Week",
+//            fontWeight = FontWeight.Bold,
+//            fontSize = 40.sp,
+//            color = Color.White
+//        )
+//
+//        if (totalMiles == null) {
+//            Text(
+//                "Loading stats...",
+//                color = Color.White,
+//                fontSize = 32.sp,
+//                fontWeight = FontWeight.Light
+//            )
+//        } else {
+//            Row {
+//                if (totalMiles >= 10.0) {
+//                    Image(
+//                        painter = painterResource(Res.drawable.badge),
+//                        contentDescription = null,
+//                    )
+//
+//                    Text(
+//                        "Badge unlocked: 10 Miles!",
+//                        fontSize = 24.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color(0xFF9958F9),
+//                        modifier = Modifier.padding(top = 16.dp)
+//                    )
+//                }
+//            }
+//
+//        }
+//
+//        TextButton(
+//            onClick = { /*TODO*/ }
+//        ) {
+//            Text(
+//                "See All Badges >",
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 40.sp,
+//                color = Color.White,
+//            )
+//        }
+//    }
+//}
 
 /**
  * Fetch the total miles walked by the user.

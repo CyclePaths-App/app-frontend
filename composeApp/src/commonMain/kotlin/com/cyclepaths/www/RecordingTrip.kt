@@ -70,7 +70,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                     Font(Res.font.josefin_sans_italic, FontWeight.Normal, FontStyle.Italic)
                 )
                 val api = remember { BackendAPI(BACKEND_URL) }
-                var errorMessge by remember { mutableStateOf<String?>(null) }
+                var errorMessage by remember { mutableStateOf<String?>(null) }
                 var locationList by remember { mutableStateOf(ArrayList<BackendAPI.Location>()) }
                 val scope = rememberCoroutineScope()
 
@@ -171,7 +171,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType) {
                     )
                 }
 
-                errorMessge?.let {
+                errorMessage?.let {
                     Text(
                         it,
                         color = Color.Red,

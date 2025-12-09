@@ -6,6 +6,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -28,7 +29,7 @@ class BackendAPI(baseUrl: String) {
     private val baseUrl = baseUrl
 
     suspend fun getTrips(userId: Int): List<Trip> {
-        return client.get("$baseUrl/users/$userId/trips").body()
+        return client.get("$baseUrl/trips/userid/$userId").body()
     }
 
     @Serializable
@@ -80,36 +81,39 @@ class BackendAPI(baseUrl: String) {
      * This is for a full trip that includes distance.
      */
     @Serializable
-    private data class CreateTripFull(
+    private data class UserTrip(
         val tripID: Int,
         val userID: Int,
         val distance: Int,
         val tripType: TripType
     )
 
-//    suspend fun createUserTrip(
-//        tripID: Int,
-//        userID: Int,
-//        distance: Int,
-//        tripType: TripType
-//    ): Result<Int> {
-//        val res = try {
-//            client.post("$baseUrl/users/") {
-//                contentType(ContentType.Application.Json)
-//                setBody(CreateUser(username, firstName, lastName, email, password))
-//            }
-//        } catch (e: Exception) {
-//            return Result.failure(Exception("Client error: ${e.message}"))
-//        }
-//
-//        return when (res.status.value) {
-//            in 200..299 -> Result.success(res.body<CreateUserRes>().id)
-//            400 -> Result.failure(Exception("Bad Request"))
-//            409 -> Result.failure(Exception("User already exists"))
-//            500 -> Result.failure(Exception("Internal Server Error"))
-//            else -> Result.failure(Exception("Unknown Error"))
-//        }
-//    }
+    /**
+     * Adds a trip with tripID, userID, distance, and tripType.
+     */
+    suspend fun PutUserTrip(
+        tripID: Int,
+        userID: Int,
+        distance: Int,
+        tripType: TripType
+    ): Result<Int> {
+        val res = try {
+            client.put("$baseUrl") {
+                contentType(ContentType.Application.Json)
+                setBody(UserTrip(tripID, userID, distance, tripType))
+            }
+        } catch (e: Exception) {
+            return Result.failure(Exception("Client error: ${e.message}"))
+        }
+
+        return when (res.status.value) {
+            in 200..299 -> Result.success(res.body<CreateUserRes>().id)
+            400 -> Result.failure(Exception("Bad Request"))
+            409 -> Result.failure(Exception("User already exists"))
+            500 -> Result.failure(Exception("Internal Server Error"))
+            else -> Result.failure(Exception("Unknown Error"))
+        }
+    }
 
     suspend fun getTotalDistanceMeters(userId: Int): Int {
         val trips = getTrips(userId)

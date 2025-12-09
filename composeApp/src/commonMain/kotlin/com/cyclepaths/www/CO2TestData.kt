@@ -1,5 +1,7 @@
 package com.cyclepaths.www
 
+import androidx.compose.runtime.Composable
+
 /**
  * This class is just for testing out the CO2 calculation.
  */
@@ -35,5 +37,10 @@ class CO2TestData {
                 tripType = TripType.bike
             )
         )
+
+//        @Composable
+//        fun TestCO2() {
+//            BackendAPI.
+//        }
     }
 }

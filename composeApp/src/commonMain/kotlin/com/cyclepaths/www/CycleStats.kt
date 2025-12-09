@@ -143,33 +143,6 @@ fun CycleStats(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(45.dp))
 
-//                Button(
-//                    onClick = { navController.navigate("map") },
-//                    border = BorderStroke(1.dp, Color.White),
-//                    shape = RoundedCornerShape(5.dp),
-//                    contentPadding = PaddingValues(0.dp),
-//                    modifier = Modifier
-//                        .padding(15.dp)
-//                        .size(width = 500.dp, height = 70.dp)
-//                ) {
-//                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                        Image(
-//                            painter = painterResource(Res.drawable.mapoption),
-//                            contentDescription = null,
-//                            modifier = Modifier.matchParentSize(),
-//                            contentScale = ContentScale.FillBounds
-//                        )
-//
-//                        Text(
-//                            "Map Route",
-//                            color = Color.Black,
-//                            fontFamily = josefinSansFamily,
-//                            fontSize = 30.sp,
-//                            textAlign = TextAlign.Center
-//                        )
-//                    }
-//                }
-
                 val uriHandler = LocalUriHandler.current
 
                 Button(
@@ -200,82 +173,82 @@ fun CycleStats(navController: NavController) {
                         )
                     }
                 }
-                WeeklyCycleBadges()
+                //WeeklyCycleBadges()
             }
         }
     }
 }
 
-@Composable
-fun WeeklyCycleBadges() {
-    val scope = rememberCoroutineScope()
-    var totalMiles by remember { mutableStateOf<Double?>(0.0) }
-    val api = remember { BackendAPI(BACKEND_URL) }
-    val userId = SessionManager.currentUser?.id
-
-    LaunchedEffect(userId) {
-        scope.launch {
-            try {
-                totalMiles = userId?.let { api.getTotalDistanceMiles(userId = it) }
-            } catch (e: Exception) {
-                println("Error fetching total distance: ${e.message}")
-            }
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        Text(
-            "Badge of the Week",
-            fontWeight = FontWeight.Bold,
-            fontSize = 40.sp,
-            color = Color.White
-        )
-
-        if (totalMiles == null) {
-            Text(
-                "Badge unlocked: You cycled 10 km!",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Light
-            )
-        } else {
-            Row {
-                if (totalMiles!! >= 10.0) {
-                    Image(
-                        painter = painterResource(Res.drawable.badge),
-                        contentDescription = null,
-                    )
-
-                    Text(
-                        "Badge unlocked: 10 Miles!",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF9958F9),
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                }
-            }
-
-        }
-
-        TextButton(
-            onClick = { /*TODO*/ }
-        ) {
-            Text(
-                "See All Badges >",
-                fontWeight = FontWeight.Bold,
-                fontSize = 40.sp,
-                color = Color.White,
-            )
-        }
-    }
-}
+//@Composable
+//fun WeeklyCycleBadges() {
+//    val scope = rememberCoroutineScope()
+//    var totalMiles by remember { mutableStateOf<Double?>(0.0) }
+//    val api = remember { BackendAPI(BACKEND_URL) }
+//    val userId = SessionManager.currentUser?.id
+//
+//    LaunchedEffect(userId) {
+//        scope.launch {
+//            try {
+//                totalMiles = userId?.let { api.getTotalDistanceMiles(userId = it) }
+//            } catch (e: Exception) {
+//                println("Error fetching total distance: ${e.message}")
+//            }
+//        }
+//    }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(32.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Top
+//    ) {
+//        Text(
+//            "Badge of the Week",
+//            fontWeight = FontWeight.Bold,
+//            fontSize = 40.sp,
+//            color = Color.White
+//        )
+//
+//        if (totalMiles == null) {
+//            Text(
+//                "Badge unlocked: You cycled 10 km!",
+//                color = Color.White,
+//                fontSize = 32.sp,
+//                fontWeight = FontWeight.Light
+//            )
+//        } else {
+//            Row {
+//                if (totalMiles!! >= 10.0) {
+//                    Image(
+//                        painter = painterResource(Res.drawable.badge),
+//                        contentDescription = null,
+//                    )
+//
+//                    Text(
+//                        "Badge unlocked: 10 Miles!",
+//                        fontSize = 24.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = Color(0xFF9958F9),
+//                        modifier = Modifier.padding(top = 16.dp)
+//                    )
+//                }
+//            }
+//
+//        }
+//
+//        TextButton(
+//            onClick = { /*TODO*/ }
+//        ) {
+//            Text(
+//                "See All Badges >",
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 40.sp,
+//                color = Color.White,
+//            )
+//        }
+//    }
+//}
 
 /**
  * Fetch the total miles walked by the user.
