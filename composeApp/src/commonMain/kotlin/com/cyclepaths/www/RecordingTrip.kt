@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,7 +71,7 @@ fun RecordingButton(onClick: () -> Unit, message: String, enabled: Boolean) {
 }
 
 @Composable
-fun RecordingTrip(navController: NavController, tripType: TripType, prefs: DataStore<Preferences>) {
+fun RecordingTrip(navController: NavController, tripType: TripType) {
     val josefinSansFamily = FontFamily(
         Font(Res.font.josefin_sans_regular, FontWeight.Normal),
         Font(Res.font.josefin_sans_bold, FontWeight.Bold),
@@ -92,6 +93,22 @@ fun RecordingTrip(navController: NavController, tripType: TripType, prefs: DataS
                 .padding(35.dp)
         )
         {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(35.dp),
+                contentAlignment = Alignment.TopStart
+            ) {
+                TextButton(
+                    onClick = { navController.navigate("welcome") }
+                ) {
+                    Text(
+                        "< Back",
+                        color = Color(0xFFA8A4FF),
+                        fontWeight = FontWeight.Light
+                    )
+                }
+            }
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -129,7 +146,7 @@ fun RecordingTrip(navController: NavController, tripType: TripType, prefs: DataS
                                 tracker.stopTracking()// Stop tracking to prevent overlapping thread nonsense.
                                 isTracking = false
 
-                                val userId = getUser(prefs).id
+                                val userId = SessionManager.currentUser!!.id
                                 if (userId == -1) {
                                     navController.navigate("login")
                                 }

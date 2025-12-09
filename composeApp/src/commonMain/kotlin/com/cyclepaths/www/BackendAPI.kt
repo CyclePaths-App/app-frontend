@@ -68,7 +68,7 @@ class BackendAPI(baseUrl: String) {
             400 -> Result.failure(Exception("Bad Request."))
             409 -> Result.failure(Exception("Unauthorized."))
             500 -> Result.failure(Exception("Internal Server Error."))
-            else -> Result.failure(Exception("Unknown Error."))
+            else -> Result.failure(Exception("Unknown Error: ${res.status.value}"))
         }
     }
 

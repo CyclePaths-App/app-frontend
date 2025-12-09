@@ -34,31 +34,35 @@ suspend fun setUser(
     }
 }
 
-suspend fun getUser(prefs: DataStore<Preferences>): User {
+suspend fun getUser(prefs: DataStore<Preferences>): User? {
 
-    var id: Int = -1
+    var id: Int? = -1
     var username: String = ""
     var email: String = ""
     var password: String = ""
     var firstname: String = ""
     var lastname: String = ""
 
-    prefs.data.collect { dataStore ->
-        val idKey = intPreferencesKey("user_id")
-        id = dataStore[idKey]!!
-        val usernameKey = stringPreferencesKey("username")
-        username = dataStore[usernameKey]!!
-        val emailKey = stringPreferencesKey("email")
-        email = dataStore[emailKey]!!
-        val firstNameKey = stringPreferencesKey("firstName")
-        firstname = dataStore[firstNameKey]!!
-        val lastNameKey = stringPreferencesKey("lastName")
-        lastname = dataStore[lastNameKey]!!
-        val passwordKey = stringPreferencesKey("password")
-        password = dataStore[passwordKey]!!
-    }
-    return User(id, username, firstname, lastname, email, password)
+    val dataStore = prefs.data.getLastEmittedItem()
 
+    if (dataStore != null) {
+        val idKey = intPreferencesKey("user_id")
+        id = dataStore[idKey]
+        if (id != null) {
+            val usernameKey = stringPreferencesKey("username")
+            username = dataStore[usernameKey]!!
+            val emailKey = stringPreferencesKey("email")
+            email = dataStore[emailKey]!!
+            val firstNameKey = stringPreferencesKey("firstName")
+            firstname = dataStore[firstNameKey]!!
+            val lastNameKey = stringPreferencesKey("lastName")
+            lastname = dataStore[lastNameKey]!!
+            val passwordKey = stringPreferencesKey("password")
+            password = dataStore[passwordKey]!!
+            return User(id, username, firstname, lastname, email, password)
+        }
+    }
+    return null
 }
 
 internal const val DATA_STORE_FILENAME = "prefs.preferences_pb"

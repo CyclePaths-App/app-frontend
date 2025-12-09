@@ -62,7 +62,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun App(prefs: DataStore<Preferences>) {
     // Initialize the navigation controller only once
     val navController = rememberNavController()
-    
+
+    SessionManager.currentUser = runBlocking { getUser(prefs) }
+
     MaterialTheme {
         NavHost(navController, startDestination = "login", builder = {
             composable("login") { Login(navController, prefs) }
@@ -70,14 +72,17 @@ fun App(prefs: DataStore<Preferences>) {
             composable("welcome") { Welcome(navController, prefs) }
             composable("walkstats") { WalkStats(navController) }
             composable("cyclestats") { CycleStats(navController) }
-            composable("bikeTrip") { RecordingTrip(navController, TripType.bike, prefs) }
-            composable("walkTrip") { RecordingTrip(navController, TripType.walk, prefs) }
+            composable("bikeTrip") { RecordingTrip(navController, TripType.bike) }
+            composable("walkTrip") { RecordingTrip(navController, TripType.walk) }
         })
     }
 }
 
 @Composable
 fun Login(navController: NavController, prefs: DataStore<Preferences>) {
+    if (SessionManager.currentUser != null) {
+        navController.navigate("welcome")
+    }
     MaterialTheme {
         Box {
             Image(
