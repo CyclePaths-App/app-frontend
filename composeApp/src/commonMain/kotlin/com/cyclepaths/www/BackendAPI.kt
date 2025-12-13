@@ -166,6 +166,7 @@ class BackendAPI(baseUrl: String) {
         val username: String,
         val password: String
     )
+
     suspend fun sendLogin(username: String, password: String): Result<User> {
         val res = try {
             client.post("$baseUrl/users/login") {
@@ -187,5 +188,21 @@ class BackendAPI(baseUrl: String) {
 
     suspend fun deleteUser(user: User) {
         client.delete("$baseUrl/users/${user.id}")
+    }
+
+    suspend fun getTotalDistanceMetersWalk(userId: Int): Int {
+        val trips = getTrips(userId)
+        var sum = 0
+
+        for (trip in trips) {
+            if (trip.trip_type == TripType.walk) {
+                sum += trip.distance
+            }
+        }
+        return sum;
+    }
+
+    suspend fun getTotalDistanceMilesWalk(userId: Int): Double {
+        return getTotalDistanceMetersWalk(userId) * 0.0006213712
     }
 }

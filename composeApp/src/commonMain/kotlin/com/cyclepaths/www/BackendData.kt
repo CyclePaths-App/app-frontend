@@ -19,12 +19,7 @@ data class User(
  * Contains the trip data.
  */
 @Serializable
-data class Trip(
-    val id: Int,
-    val userId: Int,
-    val distance: Int,
-    val tripType: TripType
-)
+data class Trip(val id: Int, val user_id: Int, val distance: Int, val trip_type: TripType)
 
 /**
  * Enum for identifying the trip type.

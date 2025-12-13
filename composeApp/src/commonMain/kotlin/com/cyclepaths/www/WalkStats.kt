@@ -57,6 +57,7 @@ import cyclepaths.composeapp.generated.resources.walkoption
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 
@@ -111,62 +112,38 @@ fun WalkStats(navController: NavController) {
                 )
                 Text(
                     buildAnnotatedString {
-                        append("You saved ")
+                        append("You saved\n")
+
                         withStyle(
                             SpanStyle(
                                 color = Color(0xFF9958F9),
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append("XXXX\n") // This needs to be a number.
+                            append("${CO2SavedCombustionWalk()} kg-eq CO2 compared to combustion vehicles\n")
+                            append("${CO2SavedElectricWalk()} kg-eq CO2 compared to electric vehicles\n")
                         }
-                        append(" \nCO2 and walked\n ")
+
+                        append("\nYou walked\n")
+
                         withStyle(
                             SpanStyle(
                                 color = Color(0xFF9958F9),
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append("\n${CalculateMiles()}") // This needs to be a number.
+                            append("${CycleMiles()} miles\n")
                         }
-                        append(" miles!")
                     },
                     color = Color(0xFFA8A4FF),
                     textAlign = TextAlign.Center,
-                    fontSize = 50.sp,
+                    fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    lineHeight = 38.sp
                 )
 
                 Spacer(modifier = Modifier.height(45.dp))
-
-//                Button(
-//                    onClick = { navController.navigate("cyclestats") },
-//                    border = BorderStroke(1.dp, Color.White),
-//                    shape = RoundedCornerShape(5.dp),
-//                    contentPadding = PaddingValues(0.dp),
-//                    modifier = Modifier
-//                        .padding(15.dp)
-//                        .size(width = 500.dp, height = 70.dp)
-//                ) {
-//                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                        Image(
-//                            painter = painterResource(Res.drawable.mapoption),
-//                            contentDescription = null,
-//                            modifier = Modifier.matchParentSize(),
-//                            contentScale = ContentScale.FillBounds
-//                        )
-//
-//                        Text(
-//                            "Map Route",
-//                            color = Color.Black,
-//                            fontFamily = josefinSansFamily,
-//                            fontSize = 30.sp,
-//                            textAlign = TextAlign.Center
-//                        )
-//                    }
-//                }
 
                 val uriHandler = LocalUriHandler.current
 
@@ -198,75 +175,16 @@ fun WalkStats(navController: NavController) {
                         )
                     }
                 }
-                WeeklyBadges()
             }
-        }
-    }
-}
-
-@Composable
-fun WeeklyBadges() {
-    val totalMiles = CalculateMiles()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        Text(
-            "Badge of the Week",
-            fontWeight = FontWeight.Bold,
-            fontSize = 40.sp,
-            color = Color.White
-        )
-
-        if (totalMiles == null) {
-            Text(
-                "Loading stats...",
-                color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Light
-            )
-        } else {
-            Row {
-                if (totalMiles >= 10.0) {
-                    Image(
-                        painter = painterResource(Res.drawable.badge),
-                        contentDescription = null,
-                    )
-
-                    Text(
-                        "Badge unlocked: 10 Miles!",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF9958F9),
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                }
-            }
-
-        }
-
-        TextButton(
-            onClick = { /*TODO*/ }
-        ) {
-            Text(
-                "See All Badges >",
-                fontWeight = FontWeight.Bold,
-                fontSize = 40.sp,
-                color = Color.White,
-            )
         }
     }
 }
 
 /**
- * Fetch the total miles walked by the user.
+ * Fetch the total miles cycled by the user.
  */
 @Composable
-fun CalculateMiles(): Double? {
+fun WalkMiles(): Double? {
     val scope = rememberCoroutineScope()
     var totalMiles by remember { mutableStateOf<Double?>(0.0) }
     val api = remember { BackendAPI(BACKEND_URL) }
@@ -275,7 +193,7 @@ fun CalculateMiles(): Double? {
     LaunchedEffect(userId) {
         scope.launch {
             try {
-                totalMiles = userId?.let { api.getTotalDistanceMiles(it) }
+                totalMiles = userId?.let { api.getTotalDistanceMilesWalk(it) }
             } catch (e: Exception) {
                 println("Error fetching total distance: ${e.message}")
             }
@@ -284,7 +202,40 @@ fun CalculateMiles(): Double? {
     return totalMiles
 }
 
+/**
+ * Calculate the CO2 saved by the user for combustion vehicles.
+ */
 @Composable
-fun CalculateCO2() {
+fun CO2SavedCombustionWalk(): Double? {
+    /*
+    electric vehicle = 0.1286 kg CO2-eq/km for battery electric vehicles.
+    combustion vehicle = 0.2032 kg CO2-eq/km for internal combustion engines. Convert miles to km or this to CO2-eq/mile
+    walk= 0.16 kg CO2-eq/km on average for walking
+    CO2_saved = (miles * vehicle_conversion) – (miles * bike_conversion)
+     */
+    val miles = WalkMiles() ?: return null
+    val combustionVehicle = 0.1262626263 // in miles
+    val walk = 0.0994193908 // in miles
+    val CO2Saved = (miles * combustionVehicle) - (miles * walk)
 
+    return (round(CO2Saved * 100.0) / 100.0)
+}
+
+/**
+ * Calculate the CO2 saved by the user for electric vehicles.
+ */
+@Composable
+fun CO2SavedElectricWalk(): Double? {
+    /*
+    electric vehicle = 0.1286 kg CO2-eq/km for battery electric vehicles.
+    combustion vehicle = 0.2032 kg CO2-eq/km for internal combustion engines. Convert miles to km or this to CO2-eq/mile
+    walk= 0.16 kg CO2-eq/km on average for walking
+    CO2_saved = (miles * vehicle_conversion) – (miles * bike_conversion)
+     */
+    val miles = WalkMiles() ?: return null
+    val electricVehicle = 0.0799083353 // in miles
+    val walk = 0.0994193908 // in miles
+    val CO2Saved = (miles * electricVehicle) - (miles * walk)
+
+    return (round(CO2Saved * 100.0) / 100.0)
 }
