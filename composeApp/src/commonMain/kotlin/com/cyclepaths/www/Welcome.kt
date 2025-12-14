@@ -2,6 +2,7 @@ package com.cyclepaths.www
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,7 +68,9 @@ fun Welcome(navController: NavController, prefs: DataStore<Preferences>) {
                 Image(
                     painter = painterResource(Res.drawable.gear),
                     contentDescription = "Gear icon",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(30.dp).clickable(true, onClick = {
+                        navController.navigate("settings")
+                    })
                 )
             }
 

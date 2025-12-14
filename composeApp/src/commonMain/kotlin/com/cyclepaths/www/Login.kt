@@ -74,6 +74,7 @@ fun App(prefs: DataStore<Preferences>) {
             composable("cyclestats") { CycleStats(navController) }
             composable("bikeTrip") { RecordingTrip(navController, TripType.bike) }
             composable("walkTrip") { RecordingTrip(navController, TripType.walk) }
+            composable("settings") { Settings(navController) }
         })
     }
 }

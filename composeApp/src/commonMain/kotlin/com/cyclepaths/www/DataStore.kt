@@ -34,6 +34,25 @@ suspend fun setUser(
     }
 }
 
+suspend fun logout(
+    prefs: DataStore<Preferences>,
+) {
+    prefs.edit { dataStore ->
+        val idKey = intPreferencesKey("user_id")
+        dataStore[idKey] = -1
+        val usernameKey = stringPreferencesKey("username")
+        dataStore[usernameKey] = ""
+        val emailKey = stringPreferencesKey("email")
+        dataStore[emailKey] = ""
+        val firstNameKey = stringPreferencesKey("firstName")
+        dataStore[firstNameKey] = ""
+        val lastNameKey = stringPreferencesKey("lastName")
+        dataStore[lastNameKey] = ""
+        val passwordKey = stringPreferencesKey("password")
+        dataStore[passwordKey] = ""
+    }
+}
+
 suspend fun getUser(prefs: DataStore<Preferences>): User? {
 
     var id: Int? = -1
