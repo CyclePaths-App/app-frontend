@@ -15,10 +15,74 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlin.collections.mapOf
+import com.cyclepaths.BackendConfig
+import com.cyclepaths.AuthStore
+import io.ktor.client.plugins.defaultrequest.*
+import io.ktor.http.*
 
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class LoginResponse(
+    val accessToken: String,
+    val user: UserDto
+)
+
+@Serializable
+data class UserDto(
+    val id: Int,
+    val email: String
+    // add username if you later include it in backend response
+)
 
 class BackendAPI(baseUrl: String) {
 
+private val client = HttpClient {
+    install(ContentNegotiation) {
+        json()
+    }
+
+    // 🔐 Default headers for every request
+    install(DefaultRequest) {
+        // Base URL for all requests
+        url(BackendConfig.BASE_URL)
+
+        // Always send API key
+        header("x-api-key", BackendConfig.API_KEY)
+
+        // Send JWT if we have it
+        AuthStore.accessToken?.let { token ->
+            header(HttpHeaders.Authorization, "Bearer $token")
+
+        }
+    }
+class BackendAPI {
+
+    suspend fun login(email: String, password: String): Boolean {
+        return try {
+            val response: LoginResponse = client.post("/auth/login") {
+                contentType(ContentType.Application.Json)
+                setBody(LoginRequest(email = email, password = password))
+            }.body()
+
+            // Save the JWT in AuthStore for future requests
+            AuthStore.accessToken = response.accessToken
+
+             // currentUser = response.user
+            true
+        } catch (e: Exception) {
+            println("Login failed: ${e.message}")
+            false
+        }
+    }
+}
+}
     private val client = HttpClient {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
